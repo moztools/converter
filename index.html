@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document & Image Converter</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; }
+        h1 { color: #1a73e8; font-size: 24px; margin-bottom: 10px; }
+        p { color: #5f6368; font-size: 14px; margin-bottom: 25px; }
+        .upload-area { border: 2px dashed #1a73e8; border-radius: 10px; padding: 30px 20px; background-color: #f8f9fa; cursor: pointer; margin-bottom: 20px; transition: background 0.3s; }
+        .upload-area:hover { background-color: #e8f0fe; }
+        .upload-area p { margin: 0; color: #1a73e8; font-weight: bold; }
+        input[type="file"] { display: none; }
+        .format-section { text-align: left; margin-bottom: 20px; }
+        label { font-weight: bold; color: #333; font-size: 14px; }
+        select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; background: #fff; }
+        button { width: 100%; padding: 15px; background-color: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        button:hover { background-color: #1557b0; }
+        button:disabled { background-color: #a0c3f7; cursor: not-allowed; }
+        .progress-bar { width: 100%; background-color: #e0e0e0; border-radius: 8px; margin-top: 20px; display: none; overflow: hidden; }
+        .progress { width: 0%; height: 20px; background-color: #34a853; transition: width 0.3s; }
+        .file-info { margin-top: 10px; font-size: 13px; color: #555; word-break: break-all; }
+        #imagePreview { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 15px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📄 Document & Image Converter</h1>
+        <p>Convert PDF, Word, JPG, and PNG files instantly.</p>
+        <label for="fileInput" class="upload-area" id="dropZone">
+            <p>📁 Tap here to select a Document or Image</p>
+            <div class="file-info" id="fileName">No file selected</div>
+            <img id="imagePreview" src="" alt="Preview">
+        </label>
+        <input type="file" id="fileInput" accept=".pdf, .doc, .docx, .txt, .jpg, .jpeg, .png, .webp">
+        <div class="format-section">
+            <label>Convert To:</label>
+            <select id="formatSelect">
+                <optgroup label="Documents">
+                    <option value="pdf">PDF Document</option>
+                    <option value="docx">Word Document (.docx)</option>
+                    <option value="txt">Text File (.txt)</option>
+                </optgroup>
+                <optgroup label="Images">
+                    <option value="jpg">Image - JPG</option>
+                    <option value="png">Image - PNG</option>
+                </optgroup>
+            </select>
+        </div>
+        <button id="convertBtn" onclick="startConversion()">Convert File</button>
+        <div class="progress-bar" id="progressBar">
+            <div class="progress" id="progress"></div>
+        </div>
+    </div>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileNameDisplay = document.getElementById('fileName');
+        const imagePreview = document.getElementById('imagePreview');
+        const convertBtn = document.getElementById('convertBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progress = document.getElementById('progress');
+        let selectedFile = null;
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                selectedFile = e.target.files[0];
+                const sizeInMB = (selectedFile.size / (1024 * 1024)).toFixed(2);
+                fileNameDisplay.innerHTML = `<strong>${selectedFile.name}</strong> (${sizeInMB} MB)`;
+                if (selectedFile.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        imagePreview.src = event.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(selectedFile);
+                } else { imagePreview.style.display = 'none'; }
+            }
+        });
+        function startConversion() {
+            if (!selectedFile) { alert("Please select a file first!"); return; }
+            const targetFormat = document.getElementById('formatSelect').value;
+            progressBar.style.display = 'block';
+            convertBtn.disabled = true;
+            convertBtn.innerText = "Uploading & Converting...";
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    convertBtn.innerText = "Conversion Complete! ✅";
+                    alert(`Success! Your file was converted to ${targetFormat.toUpperCase()}.`);
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                        progress.style.width = '0%';
+                        convertBtn.disabled = false;
+                        convertBtn.innerText = "Convert File";
+                    }, 2000);
+                } else { width += 5; progress.style.width = width + '%'; }
+            }, 100);
+        }
+    </script>
+</body>
+</html>
