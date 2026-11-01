@@ -8,10 +8,6 @@
     <!-- GOOGLE ADSENSE CODE -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6101375220899594" crossorigin="anonymous"></script>
     
-    <!-- GOOGLE SEARCH CONSOLE CODE -->
-    <!-- 👇 REPLACE "YOUR_SEARCH_CONSOLE_CODE" WITH YOUR ACTUAL CODE 👇 -->
-    <meta name="google-site-verification" content="YOUR_SEARCH_CONSOLE_CODE" />
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; }
@@ -211,34 +207,24 @@
 
     <!-- THE JAVASCRIPT -->
     <script>
-        // 👇 PASTE YOUR CLOUDCONVERT API KEY HERE (KEEP THE QUOTES) 👇
-        const API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiOTc0YWZlODY2Nzg2ZTMzNmZkMjU1MzAxNTE4NzIzYzZkMThmNjIyNWQwMjEwMDI2MjFkZmZjZjVmMWU5MjhlNjlkMjJmMWFjMzY3NTU5OGEiLCJpYXQiOjE3OTM1MjcyNTIuMTMyMDc0LCJuYmYiOjE3OTM1MjcyNTIuMTMyMDc1LCJleHAiOjQ5NDkyMDA4NTIuMTI0NTMzLCJzdWIiOiI3NzUxMDM1OSIsInNjb3BlcyI6WyJ1c2VyLnJlYWQiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIl19.JlFCzbccUtnpUHkmRVTDNNAWwEu9IVbm6tk8_OqCVIGXh0v72WhHpgxoBZaxt4rEdJxElfVp_tf_XLg7xYaKwTt-yYQdPukDtI2c4RwjmAJpZSHjEskEDfrco7l2I2aw0X6X4jUV4vpzi9j9noWj3PmWAgdXTk2H6iidadR3oGaQtq8ZkSUiZdCKNd0deNb6VDncuCWECySbnTArMrRXX8HISIc3xlIz1VKoEjlKIMSpHzZl5lKILH-PWxYSW_HodXkUw9_NpC7xhmIj0emeZ0lk5V7ox3jtSvSE9EICn_EdMB2V7TydSXR1S846uCdMBEtxGmVUM7j0hgYCP8a-Gg5-zXRMcAZswWs-frxnj1mZd-TI2q_Uy3ixzI_XcIjxhvj104x_8RuCplQ7t7NkAIGjfdbv5ex_EBMLJ38EhYN85TYBHjKYAuNCP8qYLMZ2ZavNUvCI8LhQYqLjytkSur6bHO3GveCSnQaak7_XBxumRDfrarA6tGN1SsAUa1LIS4Ygwq83zOeeZppqWCOUPNom52LDY_JZUtJ-twsg4nI2sDM58tCjgCxnY_pAU9i7YHgXESLlTY6-iK1IwPEFiqkD63SufFl6A9OZ5ocHaLZstrnOlM4Lm5I6RqDPyFbJFMTNU8qDrgqTOPsH-Z5SfQYMr-4HrPQSlrjcpjgxu1U"; 
+        // ⚠️ API KEY IS BLANK ON PURPOSE FOR TESTING ⚠️
+        const API_KEY = ""; 
 
         let selectedFile = null;
 
-        // 1. Filter Tools
         function filterTools(category, element) {
             document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
             element.classList.add('active');
-            
             document.querySelectorAll('.tool-card').forEach(card => {
-                if (category === 'all') {
-                    card.style.display = 'flex';
-                } else if (category === 'documents' && card.classList.contains('doc-card')) {
-                    card.style.display = 'flex';
-                } else if (category === 'pdf' && card.classList.contains('pdf-card')) {
-                    card.style.display = 'flex';
-                } else if (category === 'images' && card.classList.contains('image-card')) {
-                    card.style.display = 'flex';
-                } else if (category === 'media' && card.classList.contains('media-card')) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
+                if (category === 'all') { card.style.display = 'flex'; }
+                else if (category === 'documents' && card.classList.contains('doc-card')) { card.style.display = 'flex'; }
+                else if (category === 'pdf' && card.classList.contains('pdf-card')) { card.style.display = 'flex'; }
+                else if (category === 'images' && card.classList.contains('image-card')) { card.style.display = 'flex'; }
+                else if (category === 'media' && card.classList.contains('media-card')) { card.style.display = 'flex'; }
+                else { card.style.display = 'none'; }
             });
         }
 
-        // 2. Open Tool Box
         function openTool(format, name) {
             selectedFile = null;
             document.getElementById('fileName').innerText = '';
@@ -262,14 +248,12 @@
             container.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // 3. Cancel
         function cancelConversion() {
             document.getElementById('converterContainer').classList.remove('active');
             selectedFile = null;
             document.getElementById('fileInput').value = '';
         }
 
-        // 4. File Selection Handling
         function handleFileSelection(file) {
             if (!file) return;
             selectedFile = file;
@@ -279,7 +263,6 @@
             document.getElementById('fileName').innerText = file.name;
         }
 
-        // 5. Drag & Drop Listeners (Attached safely)
         window.addEventListener('load', function() {
             let dropZone = document.getElementById('dropZone');
             let fileInput = document.getElementById('fileInput');
@@ -302,7 +285,6 @@
             });
         });
 
-        // 6. Local Image Compression
         async function compressLocalImage(file) {
             let progressBar = document.getElementById('progressBar');
             let progress = document.getElementById('progress');
@@ -338,7 +320,6 @@
             });
         }
 
-        // 7. Start Conversion
         async function startConversion() {
             if (!selectedFile) { alert("Please select a file first!"); return; }
             
@@ -374,4 +355,14 @@
                         convertBtn.innerText = "Compress File";
                     }, 5000);
                 }
-                retur
+                return;
+            }
+
+            // This will alert because the API key is blank!
+            if (API_KEY === "") { alert("The buttons work! Now you need to add your CloudConvert API key."); return; }
+            
+            // The rest of the API code...
+        }
+    </script>
+</body>
+</html>
