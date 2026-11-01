@@ -8,6 +8,10 @@
     <!-- GOOGLE ADSENSE CODE -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6101375220899594" crossorigin="anonymous"></script>
     
+    <!-- GOOGLE SEARCH CONSOLE CODE -->
+    <!-- 👇 REPLACE "YOUR_SEARCH_CONSOLE_CODE" WITH YOUR ACTUAL CODE 👇 -->
+    <meta name="google-site-verification" content="YOUR_SEARCH_CONSOLE_CODE" />
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; }
@@ -26,7 +30,9 @@
         
         /* Tool Grid */
         .tool-list { padding: 10px 20px 30px 20px; max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .tool-card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 20px; display: flex; align-items: flex-start; gap: 15px; cursor: pointer; transition: 0.2s; text-align: left; }
+        
+        /* The card CSS has been updated to prevent text highlighting */
+        .tool-card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 20px; display: flex; align-items: flex-start; gap: 15px; cursor: pointer; transition: 0.2s; text-align: left; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
         .tool-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #cbd5e1; }
         
         .card-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; flex-shrink: 0; }
@@ -207,8 +213,8 @@
 
     <!-- THE JAVASCRIPT -->
     <script>
-        // ⚠️ API KEY IS BLANK ON PURPOSE FOR TESTING ⚠️
-        const API_KEY = ""; 
+        // 👇 PASTE YOUR CLOUDCONVERT API KEY HERE (KEEP THE QUOTES) 👇
+        const API_KEY = "YOUR_API_KEY_HERE"; 
 
         let selectedFile = null;
 
@@ -358,11 +364,8 @@
                 return;
             }
 
-            // This will alert because the API key is blank!
-            if (API_KEY === "") { alert("The buttons work! Now you need to add your CloudConvert API key."); return; }
-            
-            // The rest of the API code...
-        }
-    </script>
-</body>
-</html>
+            if (API_KEY === "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiOTc0YWZlODY2Nzg2ZTMzNmZkMjU1MzAxNTE4NzIzYzZkMThmNjIyNWQwMjEwMDI2MjFkZmZjZjVmMWU5MjhlNjlkMjJmMWFjMzY3NTU5OGEiLCJpYXQiOjE3OTM1MjcyNTIuMTMyMDc0LCJuYmYiOjE3OTM1MjcyNTIuMTMyMDc1LCJleHAiOjQ5NDkyMDA4NTIuMTI0NTMzLCJzdWIiOiI3NzUxMDM1OSIsInNjb3BlcyI6WyJ1c2VyLnJlYWQiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIl19.JlFCzbccUtnpUHkmRVTDNNAWwEu9IVbm6tk8_OqCVIGXh0v72WhHpgxoBZaxt4rEdJxElfVp_tf_XLg7xYaKwTt-yYQdPukDtI2c4RwjmAJpZSHjEskEDfrco7l2I2aw0X6X4jUV4vpzi9j9noWj3PmWAgdXTk2H6iidadR3oGaQtq8ZkSUiZdCKNd0deNb6VDncuCWECySbnTArMrRXX8HISIc3xlIz1VKoEjlKIMSpHzZl5lKILH-PWxYSW_HodXkUw9_NpC7xhmIj0emeZ0lk5V7ox3jtSvSE9EICn_EdMB2V7TydSXR1S846uCdMBEtxGmVUM7j0hgYCP8a-Gg5-zXRMcAZswWs-frxnj1mZd-TI2q_Uy3ixzI_XcIjxhvj104x_8RuCplQ7t7NkAIGjfdbv5ex_EBMLJ38EhYN85TYBHjKYAuNCP8qYLMZ2ZavNUvCI8LhQYqLjytkSur6bHO3GveCSnQaak7_XBxumRDfrarA6tGN1SsAUa1LIS4Ygwq83zOeeZppqWCOUPNom52LDY_JZUtJ-twsg4nI2sDM58tCjgCxnY_pAU9i7YHgXESLlTY6-iK1IwPEFiqkD63SufFl6A9OZ5ocHaLZstrnOlM4Lm5I6RqDPyFbJFMTNU8qDrgqTOPsH-Z5SfQYMr-4HrPQSlrjcpjgxu1U") { alert("Please add your CloudConvert API key!"); return; }
+            convertBtn.innerText = "Uploading...";
+
+            try {
+                con
