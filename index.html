@@ -1,135 +1,159 @@
+          convertBtn.style.backgroundColor = "#34a853";
+                
+                const downloadUrl = exportTask.result.files[0].url;
+                d```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document & Image Converter</title>
+    <title>MozTools - File Converter</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; }
-        h1 { color: #1a73e8; font-size: 24px; margin-bottom: 10px; }
-        p { color: #5f6368; font-size: 14px; margin-bottom: 25px; }
-        .upload-area { border: 2px dashed #1a73e8; border-radius: 10px; padding: 30px 20px; background-color: #f8f9fa; cursor: pointer; margin-bottom: 20px; transition: background 0.3s; }
-        .upload-area:hover { background-color: #e8f0fe; }
-        .upload-area p { margin: 0; color: #1a73e8; font-weight: bold; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fc; margin: 0; padding: 0; color: #1a1f36; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .navbar h1 { margin: 0; font-size: 22px; font-weight: 700; color: #000; }
+        .navbar h1 span { color: #1a73e8; }
+        .categories { display: flex; overflow-x: auto; padding: 15px 20px; gap: 10px; }
+        .pill { padding: 8px 16px; background: white; border: 1px solid #d1d5db; border-radius: 20px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+        .tool-list { padding: 10px 20px 30px 20px; max-width: 600px; margin: 0 auto; }
+        .tool-card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 20px; margin-bottom: 15px; display: flex; align-items: flex-start; gap: 15px; cursor: pointer; transition: 0.2s; }
+        .tool-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .card-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; flex-shrink: 0; }
+        .bg-red { background: #fee2e2; color: #dc2626; }
+        .bg-blue { background: #e0f2fe; color: #0284c7; }
+        .bg-green { background: #dcfce7; color: #16a34a; }
+        .bg-purple { background: #f3e8ff; color: #9333ea; }
+        .card-content h3 { margin: 0 0 5px 0; font-size: 18px; font-weight: 700; }
+        .card-content p { margin: 0; font-size: 14px; color: #64748b; }
+        .converter-area { padding: 20px; max-width: 600px; margin: 0 auto 40px auto; background: white; border-radius: 16px; border: 1px solid #e5e7eb; display: none; }
+        .converter-area.active { display: block; }
+        .upload-box { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; }
         input[type="file"] { display: none; }
-        .format-section { text-align: left; margin-bottom: 20px; }
-        label { font-weight: bold; color: #333; font-size: 14px; }
-        select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; background: #fff; }
-        button { width: 100%; padding: 15px; background-color: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
-        button:hover { background-color: #1557b0; }
-        button:disabled { background-color: #a0c3f7; cursor: not-allowed; }
-        .progress-bar { width: 100%; background-color: #e0e0e0; border-radius: 8px; margin-top: 20px; display: none; overflow: hidden; }
-        .progress { width: 0%; height: 20px; background-color: #34a853; transition: width 0.3s; }
-        .file-info { margin-top: 10px; font-size: 13px; color: #555; word-break: break-all; }
-        #imagePreview { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 15px; display: none; }
-        #downloadArea { display: none; margin-top: 20px; }
-        #downloadBtn { background-color: #34a853; text-decoration: none; display: block; padding: 15px; color: white; border-radius: 8px; font-weight: bold; }
+        select { width: 100%; padding: 12px; margin-top: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 16px; display: none; }
+        .convert-btn { width: 100%; padding: 15px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; margin-top: 15px; cursor: pointer; }
+        .convert-btn:disabled { background: #93c5fd; }
+        .progress-bar { width: 100%; background: #e2e8f0; border-radius: 8px; margin-top: 15px; display: none; overflow: hidden; }
+        .progress { width: 0%; height: 15px; background: #10b981; transition: width 0.3s; }
+        #downloadBtn { display: none; text-align: center; background: #10b981; color: white; text-decoration: none; padding: 15px; border-radius: 8px; font-weight: bold; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📄 Document & Image Converter</h1>
-        <p>Convert PDF, Word, JPG, and PNG files instantly.</p>
-        
-        <label for="fileInput" class="upload-area" id="dropZone">
-            <p>📁 Tap here to select a Document or Image</p>
-            <div class="file-info" id="fileName">No file selected</div>
-            <img id="imagePreview" src="" alt="Preview">
-        </label>
-        <input type="file" id="fileInput" accept=".pdf, .doc, .docx, .txt, .jpg, .jpeg, .png, .webp">
-        
-        <div class="format-section">
-            <label>Convert To:</label>
-            <select id="formatSelect">
-                <optgroup label="Documents">
-                    <option value="pdf">PDF Document</option>
-                    <option value="docx">Word Document (.docx)</option>
-                    <option value="txt">Text File (.txt)</option>
-                </optgroup>
-                <optgroup label="Images">
-                    <option value="jpg">Image - JPG</option>
-                    <option value="png">Image - PNG</option>
-                </optgroup>
-            </select>
-        </div>
-        
-        <button id="convertBtn" onclick="startConversion()">Convert File</button>
-        
-        <div class="progress-bar" id="progressBar">
-            <div class="progress" id="progress"></div>
+    <div class="navbar">
+        <div style="font-size: 24px;">☰</div>
+        <h1>Moz<span>Tools</span></h1>
+        <div style="font-size: 24px; color: #64748b;">⋮⋮</div>
+    </div>
+    
+    <div class="categories">
+        <div class="pill">All Tools</div>
+        <div class="pill">Documents</div>
+        <div class="pill">Images</div>
+    </div>
+    
+    <div class="tool-list">
+        <div class="tool-card" onclick="selectTool('pdf', 'PDF Document')">
+            <div class="card-icon bg-red">📄</div>
+            <div class="card-content">
+                <h3>Create PDF File</h3>
+                <p>Turn your photos and text documents into a single, clean PDF file instantly.</p>
+            </div>
         </div>
 
-        <div id="downloadArea">
-            <a id="downloadBtn" href="#" target="_blank">⬇️ Download Converted File</a>
+        <div class="tool-card" onclick="selectTool('docx', 'Word Document')">
+            <div class="card-icon bg-blue">📝</div>
+            <div class="card-content">
+                <h3>Convert PDF to Word</h3>
+                <p>Unlock your PDFs. Convert them into editable Word documents without losing formatting.</p>
+            </div>
         </div>
+
+        <div class="tool-card" onclick="selectTool('png', 'PNG Image')">
+            <div class="card-icon bg-green">🖼️</div>
+            <div class="card-content">
+                <h3>Make it a PNG</h3>
+                <p>Upgrade your images to high-quality PNGs, perfect for transparent backgrounds.</p>
+            </div>
+        </div>
+
+        <div class="tool-card" onclick="selectTool('jpg', 'JPG Image')">
+            <div class="card-icon bg-purple">📸</div>
+            <div class="card-content">
+                <h3>Save as JPG</h3>
+                <p>Shrink large image files by converting them to the standard JPG format.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="converter-area" id="converterArea">
+        <h2 id="toolTitle" style="text-align: center; font-size: 20px;">Convert File</h2>
+        <label for="fileInput" class="upload-box">
+            <div style="font-size: 30px; margin-bottom: 10px;">📁</div>
+            <div id="fileName" style="font-weight: 600; color: #1a73e8;">Tap to select a file</div>
+        </label>
+        <input type="file" id="fileInput">
+        <select id="formatSelect">
+            <option value="pdf">PDF</option>
+            <option value="docx">DOCX</option>
+            <option value="png">PNG</option>
+            <option value="jpg">JPG</option>
+        </select>
+        <button id="convertBtn" class="convert-btn" onclick="startConversion()">Convert File</button>
+        <div class="progress-bar" id="progressBar"><div class="progress" id="progress"></div></div>
+        <a id="downloadBtn" href="#" target="_blank">⬇️ Download Converted File</a>
     </div>
 
     <script>
         const fileInput = document.getElementById('fileInput');
         const fileNameDisplay = document.getElementById('fileName');
-        const imagePreview = document.getElementById('imagePreview');
         const convertBtn = document.getElementById('convertBtn');
         const progressBar = document.getElementById('progressBar');
         const progress = document.getElementById('progress');
-        const downloadArea = document.getElementById('downloadArea');
         const downloadBtn = document.getElementById('downloadBtn');
-
+        const converterArea = document.getElementById('converterArea');
+        const toolTitle = document.getElementById('toolTitle');
+        const formatSelect = document.getElementById('formatSelect');
         let selectedFile = null;
 
-        // ⚠️ DELETE YOUR OLD KEY AND PASTE YOUR NEW KEY HERE:
-        const API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZDVhMDljOGVkODQ2NzVkZWNhMmJjNWNhZWExMzk1YzFmMGI4NzEzOTM2YTk3ZDA2N2VkYjRlNjZhNzdkYjYzODQ2MDY1YWFiMjUyMzQyMWIiLCJpYXQiOjE3OTM0ODYzNzIuMjYxNTgxLCJuYmYiOjE3OTM0ODYzNzIuMjYxNTgyLCJleHAiOjQ5NDkxNTk5NzIuMjUxODU3LCJzdWIiOiI3NzUxMDM1OSIsInNjb3BlcyI6WyJ1c2VyLnJlYWQiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIl19.hxMMxnZKwjdK8RP8-y8nAl6KYUSd8MIa9dndD4HdsD6vHq4PxqksNsBbs0U-G8fLKqNIt3SBEDpRT75ADku4A2sQcvFqZXd4Vu_4VMEttwSYmVOJLjBLk8Ed6_3jUf82v05IcH60KH_nqE7VnnIOCV7Ws5LzmzjybuO6Z6SWh06g74uMF-R5dGM9R6f70Sa00yqWtryWrfL_58x0UdxZG949gxk3yMSxz96RihGfXYdBP-2Di2zoJafh287yUCt-il-HWKNslvA2gYxpou7UePRog6gF3LzyIqhQpKKMZLteqBWZTUT2dFbVD0NSI61qnSdysHkXSV13SWjVik5ueZfNZdHP7M1_YanEmdwgl4c5xEOWAcSPExHBeofnV-LtZfZiLICcSb_zBYiXiHZm8stmYMeAhBoDIxtDIets0csJPlPSqQKxN_WiHWCC5X50yM1A6q6BP9Dahni1E9LZt_lmZGOdjavRlGG20zNC7nOQs5UEO0evekxvsLWzb_5oG6Po7KoSZiAxDONS8qD6c8GDjmqodC0cKRWnX9YxqbgL4cFUR32j0kVBepHMjV2gkwWhlsqhEPJ1csqaQL4ncP7ktZVCfwCTy1I1J8uJLLI01P05XKJ98f5IyeFE681C0VeMntQdDPLax-74LzBB_MTqhBNjwyiJVYd0Z0Tf6B0"; 
+        // ⚠️ PASTE YOUR NEW API KEY HERE:
+        const API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiOTc0YWZlODY2Nzg2ZTMzNmZkMjU1MzAxNTE4NzIzYzZkMThmNjIyNWQwMjEwMDI2MjFkZmZjZjVmMWU5MjhlNjlkMjJmMWFjMzY3NTU5OGEiLCJpYXQiOjE3OTM1MjcyNTIuMTMyMDc0LCJuYmYiOjE3OTM1MjcyNTIuMTMyMDc1LCJleHAiOjQ5NDkyMDA4NTIuMTI0NTMzLCJzdWIiOiI3NzUxMDM1OSIsInNjb3BlcyI6WyJ1c2VyLnJlYWQiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIl19.JlFCzbccUtnpUHkmRVTDNNAWwEu9IVbm6tk8_OqCVIGXh0v72WhHpgxoBZaxt4rEdJxElfVp_tf_XLg7xYaKwTt-yYQdPukDtI2c4RwjmAJpZSHjEskEDfrco7l2I2aw0X6X4jUV4vpzi9j9noWj3PmWAgdXTk2H6iidadR3oGaQtq8ZkSUiZdCKNd0deNb6VDncuCWECySbnTArMrRXX8HISIc3xlIz1VKoEjlKIMSpHzZl5lKILH-PWxYSW_HodXkUw9_NpC7xhmIj0emeZ0lk5V7ox3jtSvSE9EICn_EdMB2V7TydSXR1S846uCdMBEtxGmVUM7j0hgYCP8a-Gg5-zXRMcAZswWs-frxnj1mZd-TI2q_Uy3ixzI_XcIjxhvj104x_8RuCplQ7t7NkAIGjfdbv5ex_EBMLJ38EhYN85TYBHjKYAuNCP8qYLMZ2ZavNUvCI8LhQYqLjytkSur6bHO3GveCSnQaak7_XBxumRDfrarA6tGN1SsAUa1LIS4Ygwq83zOeeZppqWCOUPNom52LDY_JZUtJ-twsg4nI2sDM58tCjgCxnY_pAU9i7YHgXESLlTY6-iK1IwPEFiqkD63SufFl6A9OZ5ocHaLZstrnOlM4Lm5I6RqDPyFbJFMTNU8qDrgqTOPsH-Z5SfQYMr-4HrPQSlrjcpjgxu1U"; 
+
+        function selectTool(formatValue, toolName) {
+            formatSelect.value = formatValue;
+            toolTitle.innerText = "Convert to " + toolName;
+            converterArea.classList.add('active');
+            converterArea.scrollIntoView({ behavior: 'smooth' });
+        }
 
         fileInput.addEventListener('change', function(e) {
             if (e.target.files.length > 0) {
                 selectedFile = e.target.files[0];
-                const sizeInMB = (selectedFile.size / (1024 * 1024)).toFixed(2);
-                fileNameDisplay.innerHTML = `<strong>${selectedFile.name}</strong> (${sizeInMB} MB)`;
-                downloadArea.style.display = 'none';
-                
-                if (selectedFile.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        imagePreview.src = event.target.result;
-                        imagePreview.style.display = 'block';
-                    };
-                    reader.readAsDataURL(selectedFile);
-                } else { imagePreview.style.display = 'none'; }
+                fileNameDisplay.innerHTML = `<span style="color: #10b981;">✔</span> ${selectedFile.name}`;
+                downloadBtn.style.display = 'none';
             }
         });
 
         async function startConversion() {
             if (!selectedFile) { alert("Please select a file first!"); return; }
-            if (API_KEY === "YOUR_API_KEY_HERE") { alert("Please add your CloudConvert API key to the code first!"); return; }
+            if (API_KEY === "YOUR_API_KEY_HERE") { alert("Please add your API key!"); return; }
 
-            const targetFormat = document.getElementById('formatSelect').value;
+            const targetFormat = formatSelect.value;
             
             progressBar.style.display = 'block';
             progress.style.width = '20%';
             convertBtn.disabled = true;
-            convertBtn.innerText = "Uploading to CloudConvert...";
-            downloadArea.style.display = 'none';
+            convertBtn.innerText = "Uploading...";
+            downloadBtn.style.display = 'none';
 
             try {
-                // 1. Create a Job
                 const jobRes = await fetch('https://api.cloudconvert.com/v2/jobs', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         tasks: {
                             'import-file': { operation: 'import/upload' },
-                            'convert-file': {
-                                operation: 'convert',
-                                input: 'import-file',
-                                output_format: targetFormat
-                            },
-                            'export-file': {
-                                operation: 'export/url',
-                                input: 'convert-file'
-                            }
+                            'convert-file': { operation: 'convert', input: 'import-file', output_format: targetFormat },
+                            'export-file': { operation: 'export/url', input: 'convert-file' }
                         }
                     })
                 });
@@ -142,8 +166,7 @@
                 const uploadUrl = uploadTask.result.form.url;
                 const uploadParams = uploadTask.result.form.parameters;
 
-                // 2. Upload the file
-                convertBtn.innerText = "Converting file...";
+                convertBtn.innerText = "Converting...";
                 progress.style.width = '50%';
 
                 const formData = new FormData();
@@ -152,32 +175,47 @@
 
                 await fetch(uploadUrl, { method: 'POST', body: formData });
 
-                // 3. Wait for conversion to finish
                 progress.style.width = '75%';
                 let exportTask;
                 while (true) {
-                    const statusRes = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobId}`, {
-                        headers: { 'Authorization': `Bearer ${API_KEY}` }
-                    });
+                    const statusRes = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobId}`, { headers: { 'Authorization': `Bearer ${API_KEY}` } });
                     const statusData = await statusRes.json();
-                    const status = statusData.data.status;
-
-                    if (status === 'finished') {
-                        exportTask = statusData.data.tasks.find(t => t.name === 'export-file');
-                        break;
-                    } else if (status === 'error') {
-                        throw new Error("Conversion failed on the server.");
+                    
+                    if (statusData.data.status === 'finished') { 
+                        exportTask = statusData.data.tasks.find(t => t.name === 'export-file'); 
+                        break; 
+                    } else if (statusData.data.status === 'error') { 
+                        throw new Error("Conversion failed."); 
                     }
-                    await new Promise(r => setTimeout(r, 1500)); // Wait 1.5 seconds before checking again
+                    await new Promise(r => setTimeout(r, 1500));
                 }
 
-                // 4. Success! Show download button
                 progress.style.width = '100%';
-                convertBtn.innerText = "Conversion Complete! ✅";
-                convertBtn.style.backgroundColor = "#34a853";
+                convertBtn.innerText = "Success! ✅";
+                convertBtn.style.background = "#10b981";
                 
-                const downloadUrl = exportTask.result.files[0].url;
-                downloadBtn.href = downloadUrl;
+                downloadBtn.href = exportTask.result.files[0].url;
+                downloadBtn.style.display = 'block';
+
+            } catch (error) {
+                alert("Error: " + error.message);
+                convertBtn.innerText = "Try Again";
+                convertBtn.style.background = "#ef4444";
+                progressBar.style.display = 'none';
+            } finally {
+                convertBtn.disabled = false;
+                setTimeout(() => {
+                    progressBar.style.display = 'none';
+                    progress.style.width = '0%';
+                    convertBtn.innerText = "Convert File";
+                    convertBtn.style.background = "#1a73e8";
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>
+```ownloadBtn.href = downloadUrl;
                 downloadArea.style.display = 'block';
 
             } catch (error) {
