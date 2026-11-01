@@ -1,7 +1,3 @@
-          convertBtn.style.backgroundColor = "#34a853";
-                
-                const downloadUrl = exportTask.result.files[0].url;
-                d```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,6 +32,10 @@
         .progress-bar { width: 100%; background: #e2e8f0; border-radius: 8px; margin-top: 15px; display: none; overflow: hidden; }
         .progress { width: 0%; height: 15px; background: #10b981; transition: width 0.3s; }
         #downloadBtn { display: none; text-align: center; background: #10b981; color: white; text-decoration: none; padding: 15px; border-radius: 8px; font-weight: bold; margin-top: 15px; }
+        
+        /* Footer Styles */
+        .footer { text-align: center; padding: 30px 20px; margin-top: 40px; font-size: 14px; color: #64748b; border-top: 1px solid #e2e8f0; background: white; }
+        .footer a { color: #1a73e8; text-decoration: none; margin: 0 10px; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -103,6 +103,16 @@
         <a id="downloadBtn" href="#" target="_blank">⬇️ Download Converted File</a>
     </div>
 
+    <!-- The New Footer -->
+    <div class="footer">
+        <a href="index.html">Home</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="contact.html">Contact Us</a>
+        <br><br>
+        &copy; 2026 MozTools. All rights reserved.
+    </div>
+
     <script>
         const fileInput = document.getElementById('fileInput');
         const fileNameDisplay = document.getElementById('fileName');
@@ -116,7 +126,7 @@
         let selectedFile = null;
 
         // ⚠️ PASTE YOUR NEW API KEY HERE:
-        const API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiOTc0YWZlODY2Nzg2ZTMzNmZkMjU1MzAxNTE4NzIzYzZkMThmNjIyNWQwMjEwMDI2MjFkZmZjZjVmMWU5MjhlNjlkMjJmMWFjMzY3NTU5OGEiLCJpYXQiOjE3OTM1MjcyNTIuMTMyMDc0LCJuYmYiOjE3OTM1MjcyNTIuMTMyMDc1LCJleHAiOjQ5NDkyMDA4NTIuMTI0NTMzLCJzdWIiOiI3NzUxMDM1OSIsInNjb3BlcyI6WyJ1c2VyLnJlYWQiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIl19.JlFCzbccUtnpUHkmRVTDNNAWwEu9IVbm6tk8_OqCVIGXh0v72WhHpgxoBZaxt4rEdJxElfVp_tf_XLg7xYaKwTt-yYQdPukDtI2c4RwjmAJpZSHjEskEDfrco7l2I2aw0X6X4jUV4vpzi9j9noWj3PmWAgdXTk2H6iidadR3oGaQtq8ZkSUiZdCKNd0deNb6VDncuCWECySbnTArMrRXX8HISIc3xlIz1VKoEjlKIMSpHzZl5lKILH-PWxYSW_HodXkUw9_NpC7xhmIj0emeZ0lk5V7ox3jtSvSE9EICn_EdMB2V7TydSXR1S846uCdMBEtxGmVUM7j0hgYCP8a-Gg5-zXRMcAZswWs-frxnj1mZd-TI2q_Uy3ixzI_XcIjxhvj104x_8RuCplQ7t7NkAIGjfdbv5ex_EBMLJ38EhYN85TYBHjKYAuNCP8qYLMZ2ZavNUvCI8LhQYqLjytkSur6bHO3GveCSnQaak7_XBxumRDfrarA6tGN1SsAUa1LIS4Ygwq83zOeeZppqWCOUPNom52LDY_JZUtJ-twsg4nI2sDM58tCjgCxnY_pAU9i7YHgXESLlTY6-iK1IwPEFiqkD63SufFl6A9OZ5ocHaLZstrnOlM4Lm5I6RqDPyFbJFMTNU8qDrgqTOPsH-Z5SfQYMr-4HrPQSlrjcpjgxu1U"; 
+        const API_KEY = "YOUR_API_KEY_HERE"; 
 
         function selectTool(formatValue, toolName) {
             formatSelect.value = formatValue;
@@ -209,27 +219,6 @@
                     progress.style.width = '0%';
                     convertBtn.innerText = "Convert File";
                     convertBtn.style.background = "#1a73e8";
-                }, 5000);
-            }
-        }
-    </script>
-</body>
-</html>
-```ownloadBtn.href = downloadUrl;
-                downloadArea.style.display = 'block';
-
-            } catch (error) {
-                alert("Error: " + error.message);
-                convertBtn.innerText = "Convert File";
-                convertBtn.style.backgroundColor = "#1a73e8";
-                progressBar.style.display = 'none';
-            } finally {
-                convertBtn.disabled = false;
-                setTimeout(() => {
-                    progressBar.style.display = 'none';
-                    progress.style.width = '0%';
-                    convertBtn.innerText = "Convert File";
-                    convertBtn.style.backgroundColor = "#1a73e8";
                 }, 5000);
             }
         }
