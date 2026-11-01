@@ -30,8 +30,6 @@
         
         /* Tool Grid */
         .tool-list { padding: 10px 20px 30px 20px; max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        
-        /* The card CSS has been updated to prevent text highlighting */
         .tool-card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 20px; display: flex; align-items: flex-start; gap: 15px; cursor: pointer; transition: 0.2s; text-align: left; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
         .tool-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #cbd5e1; }
         
@@ -213,8 +211,8 @@
 
     <!-- THE JAVASCRIPT -->
     <script>
-        // 👇 PASTE YOUR CLOUDCONVERT API KEY HERE (KEEP THE QUOTES) 👇
-        const API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiYWFkNmI1MzIxYmE0NjVjYWM3MzM3YWI2NjU4YzkwNTExZDA3Y2Q1ZjgzYTU4NmM0NjJiY2YxYjM1ZjM3ZDIwOTFhYzViYmQwOTEzM2QzYzAiLCJpYXQiOjE3OTM1NjA0NTkuMDI4NjMxLCJuYmYiOjE3OTM1NjA0NTkuMDI4NjMzLCJleHAiOjQ5NDkyMzQwNTkuMDIyMTQ2LCJzdWIiOiI3NzUxMDM1OSIsInNjb3BlcyI6WyJ1c2VyLnJlYWQiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIl19.RM92RK1YGLes8Zx9pJf_kqsCr8ypL9A-m5hp8MUNlM5EVCUakgf5pEw1cNd4wUY6p0i6gFBDlMtF0VHIiN46Zew0lW-Am0kXVouhoF5TGJtwI11cvMXlGX38tASMq5BWCfaOEfgzaxapSRsTuerJ1UMxrjEBWMj7hi4YWB28RaSdPexT4SA1cL8FCAEEFXFEnRCIDBQJ9OK6VZyBvWFIMe-5KjsqqPVRsF7OLloIXV7AhMnyyuPVmjK5AhBiCVAOkDeOERDFhpo0_c-fakUN0txiJBJQZtMsk52Izt3MtS__VDlVh-2YXujdrbTqDy2T9FhcLPUkBFzmXnCSxsRvmS7wAAnGH3Kqylm_oslhNbCXz2ly6Vboid_Th8JlylDqJH0IMdWmSTJMPxf3d9dLh--VYUxClr2rJOkA_UaPcrk6y0YHQo6nXuSRi4zR7M-dFjuYO5jYQcHi5odTvV-4gQw7IYc00E1Qy2REkCYkCZqHw1b33Iv8jmnKGadXoSxRWb0Bg5EbiKqOQpIZDNXfSrojm03utarHgqNZixM0OZEFUWGYOt8MEiT3_26wIIDeGKEnl0fbERIP8XsKo8uatjm04phPIawPQwkN98W1yGlqp4rFMSPukgHRpsxZqbS1NAsZeTAyKjOG3o8MlsEDFiQPDPbr_X5JupXs8NaLJX8"; 
+        // 👇 PASTE YOUR CLOUDCONVERT API KEY HERE (MAKE SURE IT IS ON ONE LINE) 👇
+        const API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNjJhNGE5OGYzZjQyN2EzOWZhYzdkYTVhYzJmNTMzM2I5M2IwZTBjZmU5ZmI5NDUyODliZTg1NzNkNWU4ZTdjZGQ5MDZkNWJlYzIyZTVhZTMiLCJpYXQiOjE3OTM1NjEzNDguOTkzMzE0LCJuYmYiOjE3OTM1NjEzNDguOTkzMzE2LCJleHAiOjQ5NDkyMzQ5NDguOTg2NTc3LCJzdWIiOiI3NzUxMDM1OSIsInNjb3BlcyI6WyJ1c2VyLnJlYWQiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIl19.fbdJ_ffL4aM62cQhbFEw8XYY5PhhITHIJ2y2oxmi-VTyxceTftjNNItwne2gdYGn2CLLDAHHDC0AO5nsMraCbFzaqRaCAyzab4Zd6985qIrnDcB1Q9QDGMR8iGi5ac1Vb-Fj_pcDEmJXqKuqJ7cEo9kaUJ54Xi6q6dh_UibHWmS8uLTkccLFgBTTTQL8BDsFIbUrus15y9Ck_sYp0QM4yuLwpSXPjrgifC7JeaaM7t9n3WB7r11naU-Xh5_jn4pzLiFOw1h0fJtw86V0uIHeu6tfykQImWRAN659spnVHNZKCmyI2PYzV6CtWyk2pMk03YkCtR_zvokJxY-6v81sZatSaeYdjqRMCnW5boYG-66alHWiC_fawCvbCqCl1Mz1R-6p9CX9j0728tEUOZJEd4Go9vqbjsASU57bWg9VxtcLYAVLVh1uvCqoCh7WVtQ2MsV5t39Jf54tXmqEqMa4ENAvrr6-wbeCb017bITWQItHjSETSu4jENn5Ja3LVOx5T4I4RiXg-gmqevjn0jwosJbtlhoZYsyEDUGXqJRNXdUP-UyYtDzMbdAI-1CQS6KY8f8rGYROyygjBAjNrl5QJWeCNSdwWpYB1tdRzQXT-Q01GjsotJnDQcFEOMomJxXfS3vJI23nX2DoV69eOBINXGG4Gu3N7dxNcNks7tWWc1g"; 
 
         let selectedFile = null;
 
@@ -346,26 +344,4 @@
                 try {
                     const compressedUrl = await compressLocalImage(selectedFile);
                     progress.style.width = '100%';
-                    convertBtn.innerText = "Success! ✅";
-                    convertBtn.style.background = "#10b981";
-                    uploadIcon.innerText = "✅";
-                    downloadBtn.href = compressedUrl;
-                    downloadBtn.download = "compressed_" + selectedFile.name;
-                    downloadBtn.style.display = 'block';
-                } catch (e) {
-                    alert("Compression failed.");
-                } finally {
-                    convertBtn.disabled = false;
-                    setTimeout(() => {
-                        progressBar.style.display = 'none';
-                        convertBtn.innerText = "Compress File";
-                    }, 5000);
-                }
-                return;
-            }
-
-            if (API_KEY === "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiOTc0YWZlODY2Nzg2ZTMzNmZkMjU1MzAxNTE4NzIzYzZkMThmNjIyNWQwMjEwMDI2MjFkZmZjZjVmMWU5MjhlNjlkMjJmMWFjMzY3NTU5OGEiLCJpYXQiOjE3OTM1MjcyNTIuMTMyMDc0LCJuYmYiOjE3OTM1MjcyNTIuMTMyMDc1LCJleHAiOjQ5NDkyMDA4NTIuMTI0NTMzLCJzdWIiOiI3NzUxMDM1OSIsInNjb3BlcyI6WyJ1c2VyLnJlYWQiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIl19.JlFCzbccUtnpUHkmRVTDNNAWwEu9IVbm6tk8_OqCVIGXh0v72WhHpgxoBZaxt4rEdJxElfVp_tf_XLg7xYaKwTt-yYQdPukDtI2c4RwjmAJpZSHjEskEDfrco7l2I2aw0X6X4jUV4vpzi9j9noWj3PmWAgdXTk2H6iidadR3oGaQtq8ZkSUiZdCKNd0deNb6VDncuCWECySbnTArMrRXX8HISIc3xlIz1VKoEjlKIMSpHzZl5lKILH-PWxYSW_HodXkUw9_NpC7xhmIj0emeZ0lk5V7ox3jtSvSE9EICn_EdMB2V7TydSXR1S846uCdMBEtxGmVUM7j0hgYCP8a-Gg5-zXRMcAZswWs-frxnj1mZd-TI2q_Uy3ixzI_XcIjxhvj104x_8RuCplQ7t7NkAIGjfdbv5ex_EBMLJ38EhYN85TYBHjKYAuNCP8qYLMZ2ZavNUvCI8LhQYqLjytkSur6bHO3GveCSnQaak7_XBxumRDfrarA6tGN1SsAUa1LIS4Ygwq83zOeeZppqWCOUPNom52LDY_JZUtJ-twsg4nI2sDM58tCjgCxnY_pAU9i7YHgXESLlTY6-iK1IwPEFiqkD63SufFl6A9OZ5ocHaLZstrnOlM4Lm5I6RqDPyFbJFMTNU8qDrgqTOPsH-Z5SfQYMr-4HrPQSlrjcpjgxu1U") { alert("Please add your CloudConvert API key!"); return; }
-            convertBtn.innerText = "Uploading...";
-
-            try {
-                con
+          
