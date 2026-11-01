@@ -8,10 +8,7 @@
     <!-- GOOGLE ADSENSE CODE (Already included) -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6101375220899594" crossorigin="anonymous"></script>
     
-    <!-- GOOGLE SEARCH CONSOLE CODE -->
-    <!-- 👇 REPLACE "YOUR_SEARCH_CONSOLE_CODE" WITH YOUR ACTUAL CODE 👇 -->
-    <meta name="google-site-verification" content="YOUR_SEARCH_CONSOLE_CODE" />
-
+    <!-- GOOGLE SEARCH CONSOLE CODE (Will add later) -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -253,8 +250,8 @@
     </div>
 
     <script>
-        // 👇 PASTE YOUR CLOUDCONVERT API KEY HERE (KEEP THE QUOTES) 👇
-        const API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiOTc0YWZlODY2Nzg2ZTMzNmZkMjU1MzAxNTE4NzIzYzZkMThmNjIyNWQwMjEwMDI2MjFkZmZjZjVmMWU5MjhlNjlkMjJmMWFjMzY3NTU5OGEiLCJpYXQiOjE3OTM1MjcyNTIuMTMyMDc0LCJuYmYiOjE3OTM1MjcyNTIuMTMyMDc1LCJleHAiOjQ5NDkyMDA4NTIuMTI0NTMzLCJzdWIiOiI3NzUxMDM1OSIsInNjb3BlcyI6WyJ1c2VyLnJlYWQiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIl19.JlFCzbccUtnpUHkmRVTDNNAWwEu9IVbm6tk8_OqCVIGXh0v72WhHpgxoBZaxt4rEdJxElfVp_tf_XLg7xYaKwTt-yYQdPukDtI2c4RwjmAJpZSHjEskEDfrco7l2I2aw0X6X4jUV4vpzi9j9noWj3PmWAgdXTk2H6iidadR3oGaQtq8ZkSUiZdCKNd0deNb6VDncuCWECySbnTArMrRXX8HISIc3xlIz1VKoEjlKIMSpHzZl5lKILH-PWxYSW_HodXkUw9_NpC7xhmIj0emeZ0lk5V7ox3jtSvSE9EICn_EdMB2V7TydSXR1S846uCdMBEtxGmVUM7j0hgYCP8a-Gg5-zXRMcAZswWs-frxnj1mZd-TI2q_Uy3ixzI_XcIjxhvj104x_8RuCplQ7t7NkAIGjfdbv5ex_EBMLJ38EhYN85TYBHjKYAuNCP8qYLMZ2ZavNUvCI8LhQYqLjytkSur6bHO3GveCSnQaak7_XBxumRDfrarA6tGN1SsAUa1LIS4Ygwq83zOeeZppqWCOUPNom52LDY_JZUtJ-twsg4nI2sDM58tCjgCxnY_pAU9i7YHgXESLlTY6-iK1IwPEFiqkD63SufFl6A9OZ5ocHaLZstrnOlM4Lm5I6RqDPyFbJFMTNU8qDrgqTOPsH-Z5SfQYMr-4HrPQSlrjcpjgxu1U"; 
+        // API KEY IS BLANK FOR NOW TO TEST IF CLICKS WORK
+        const API_KEY = ""; 
 
         const toolList = document.getElementById('toolList');
         const converterContainer = document.getElementById('converterContainer');
@@ -408,4 +405,8 @@
                 } catch (e) {
                     alert("Compression failed.");
                 } finally {
-                    convertBtn.disabled = fal
+                    convertBtn.disabled = false;
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                        convertBtn.innerText = "Compress File";
+   
