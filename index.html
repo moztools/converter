@@ -90,7 +90,7 @@
 
     <!-- Navbar -->
     <div class="navbar">
-        <h1 onclick="showHome()">Moz<span>Tools</span></h1>
+        <h1 onclick="window.scrollTo(0,0)">Moz<span>Tools</span></h1>
         <div style="font-size: 24px; color: #64748b; cursor: pointer;">⋮⋮</div>
     </div>
     
@@ -103,8 +103,82 @@
         <div class="pill" onclick="filterTools('media', this)">Audio & Video</div>
     </div>
     
-    <!-- The Tool Grid -->
-    <div class="tool-list" id="toolList"></div>
+    <!-- The Tool Grid (Hardcoded to prevent missing cards) -->
+    <div class="tool-list" id="toolList">
+        
+        <div class="tool-card image-card" onclick="selectTool('compress', 'Compress Image')">
+            <div class="card-icon bg-orange">🗜️</div>
+            <div class="card-content">
+                <h3>Compress Image</h3>
+                <p>Shrink large images instantly (No upload needed).</p>
+            </div>
+        </div>
+        
+        <div class="tool-card doc-card" onclick="selectTool('pdf', 'Create PDF')">
+            <div class="card-icon bg-red">📄</div>
+            <div class="card-content">
+                <h3>Create PDF</h3>
+                <p>Convert photos and text into a clean PDF.</p>
+            </div>
+        </div>
+
+        <div class="tool-card doc-card" onclick="selectTool('pdf', 'Word to PDF')">
+            <div class="card-icon bg-blue">📝</div>
+            <div class="card-content">
+                <h3>Word to PDF</h3>
+                <p>Make your Word documents uneditable.</p>
+            </div>
+        </div>
+
+        <div class="tool-card doc-card" onclick="selectTool('pdf', 'Excel to PDF')">
+            <div class="card-icon bg-green">📊</div>
+            <div class="card-content">
+                <h3>Excel to PDF</h3>
+                <p>Convert spreadsheets into PDF files.</p>
+            </div>
+        </div>
+
+        <div class="tool-card pdf-card" onclick="selectTool('docx', 'PDF to Word')">
+            <div class="card-icon bg-blue">📝</div>
+            <div class="card-content">
+                <h3>PDF to Word</h3>
+                <p>Convert PDFs into editable Word files.</p>
+            </div>
+        </div>
+
+        <div class="tool-card pdf-card" onclick="selectTool('xlsx', 'PDF to Excel')">
+            <div class="card-icon bg-green">📊</div>
+            <div class="card-content">
+                <h3>PDF to Excel</h3>
+                <p>Extract tables into Excel spreadsheets.</p>
+            </div>
+        </div>
+
+        <div class="tool-card image-card" onclick="selectTool('png', 'Convert to PNG')">
+            <div class="card-icon bg-green">🖼️</div>
+            <div class="card-content">
+                <h3>Convert to PNG</h3>
+                <p>Upgrade images to high-quality PNG.</p>
+            </div>
+        </div>
+
+        <div class="tool-card image-card" onclick="selectTool('jpg', 'Convert to JPG')">
+            <div class="card-icon bg-purple">📸</div>
+            <div class="card-content">
+                <h3>Convert to JPG</h3>
+                <p>Shrink large images to standard JPG.</p>
+            </div>
+        </div>
+
+        <div class="tool-card media-card" onclick="selectTool('mp3', 'Video to MP3')">
+            <div class="card-icon bg-teal">🎵</div>
+            <div class="card-content">
+                <h3>Video to MP3</h3>
+                <p>Extract the audio track from any video.</p>
+            </div>
+        </div>
+
+    </div>
 
     <!-- The Converter Section -->
     <div class="converter-container" id="converterContainer">
@@ -143,7 +217,7 @@
         </div>
     </div>
 
-    <!-- NEW: SEO & AdSense Text Section -->
+    <!-- SEO & AdSense Text Section -->
     <div class="how-to-section">
         <h2>How to Convert Your Files for Free</h2>
         <p>MozTools makes it incredibly easy to convert your files online without downloading any software. Here is how it works:</p>
@@ -166,210 +240,177 @@
         <br><br>
         &copy; 2026 MozTools. All rights reserved.
         
-        <!-- Simple Free Visitor Counter -->
+        <!-- New Reliable Visitor Counter -->
         <div class="visitor-counter">
-            <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fmoztools.github.io%2Fconverter%2F&count_bg=%231A73E8&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Visits&edge_flat=false"/>
+            <img src="https://api.visitorbadge.io/api/visitors?path=moztools.github.io%2Fconverter%2F&countColor=%231a73e8" alt="Visitors"/>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        // ⚠️ PASTE YOUR API KEY HERE:
+        const API_KEY = "YOUR_API_KEY_HERE"; 
 
-            // ⚠️ PASTE YOUR API KEY HERE:
-            const API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiOTc0YWZlODY2Nzg2ZTMzNmZkMjU1MzAxNTE4NzIzYzZkMThmNjIyNWQwMjEwMDI2MjFkZmZjZjVmMWU5MjhlNjlkMjJmMWFjMzY3NTU5OGEiLCJpYXQiOjE3OTM1MjcyNTIuMTMyMDc0LCJuYmYiOjE3OTM1MjcyNTIuMTMyMDc1LCJleHAiOjQ5NDkyMDA4NTIuMTI0NTMzLCJzdWIiOiI3NzUxMDM1OSIsInNjb3BlcyI6WyJ1c2VyLnJlYWQiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIl19.JlFCzbccUtnpUHkmRVTDNNAWwEu9IVbm6tk8_OqCVIGXh0v72WhHpgxoBZaxt4rEdJxElfVp_tf_XLg7xYaKwTt-yYQdPukDtI2c4RwjmAJpZSHjEskEDfrco7l2I2aw0X6X4jUV4vpzi9j9noWj3PmWAgdXTk2H6iidadR3oGaQtq8ZkSUiZdCKNd0deNb6VDncuCWECySbnTArMrRXX8HISIc3xlIz1VKoEjlKIMSpHzZl5lKILH-PWxYSW_HodXkUw9_NpC7xhmIj0emeZ0lk5V7ox3jtSvSE9EICn_EdMB2V7TydSXR1S846uCdMBEtxGmVUM7j0hgYCP8a-Gg5-zXRMcAZswWs-frxnj1mZd-TI2q_Uy3ixzI_XcIjxhvj104x_8RuCplQ7t7NkAIGjfdbv5ex_EBMLJ38EhYN85TYBHjKYAuNCP8qYLMZ2ZavNUvCI8LhQYqLjytkSur6bHO3GveCSnQaak7_XBxumRDfrarA6tGN1SsAUa1LIS4Ygwq83zOeeZppqWCOUPNom52LDY_JZUtJ-twsg4nI2sDM58tCjgCxnY_pAU9i7YHgXESLlTY6-iK1IwPEFiqkD63SufFl6A9OZ5ocHaLZstrnOlM4Lm5I6RqDPyFbJFMTNU8qDrgqTOPsH-Z5SfQYMr-4HrPQSlrjcpjgxu1U"; 
+        const toolList = document.getElementById('toolList');
+        const converterContainer = document.getElementById('converterContainer');
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        const fileNameDisplay = document.getElementById('fileName');
+        const toolTitle = document.getElementById('toolTitle');
+        const formatSelect = document.getElementById('formatSelect');
+        const convertBtn = document.getElementById('convertBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progress = document.getElementById('progress');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const uploadIcon = document.getElementById('uploadIcon');
+        const uploadText = document.getElementById('uploadText');
+        const uploadSub = document.getElementById('uploadSub');
+        
+        let selectedFile = null;
 
-            const toolsData = [
-                { title: 'Compress Image', desc: 'Shrink large images instantly (No upload needed).', icon: '🗜️', color: 'bg-orange', cat: 'images', format: 'compress' },
-                { title: 'Create PDF', desc: 'Convert photos and text into a clean PDF.', icon: '📄', color: 'bg-red', cat: 'documents', format: 'pdf' },
-                { title: 'Word to PDF', desc: 'Make your Word documents uneditable.', icon: '📝', color: 'bg-blue', cat: 'documents', format: 'pdf' },
-                { title: 'Excel to PDF', desc: 'Convert spreadsheets into PDF files.', icon: '📊', color: 'bg-green', cat: 'documents', format: 'pdf' },
-                { title: 'PDF to Word', desc: 'Convert PDFs into editable Word files.', icon: '📝', color: 'bg-blue', cat: 'pdf', format: 'docx' },
-                { title: 'PDF to Excel', desc: 'Extract tables into Excel spreadsheets.', icon: '📊', color: 'bg-green', cat: 'pdf', format: 'xlsx' },
-                { title: 'Convert to PNG', desc: 'Upgrade images to high-quality PNG.', icon: '🖼️', color: 'bg-green', cat: 'images', format: 'png' },
-                { title: 'Convert to JPG', desc: 'Shrink large images to standard JPG.', icon: '📸', color: 'bg-purple', cat: 'images', format: 'jpg' },
-                { title: 'Video to MP3', desc: 'Extract the audio track from any video.', icon: '🎵', color: 'bg-teal', cat: 'media', format: 'mp3' }
-            ];
-
-            const toolList = document.getElementById('toolList');
-            const converterContainer = document.getElementById('converterContainer');
-            const fileInput = document.getElementById('fileInput');
-            const dropZone = document.getElementById('dropZone');
-            const fileNameDisplay = document.getElementById('fileName');
-            const toolTitle = document.getElementById('toolTitle');
-            const formatSelect = document.getElementById('formatSelect');
-            const convertBtn = document.getElementById('convertBtn');
-            const progressBar = document.getElementById('progressBar');
-            const progress = document.getElementById('progress');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const uploadIcon = document.getElementById('uploadIcon');
-            const uploadText = document.getElementById('uploadText');
-            const uploadSub = document.getElementById('uploadSub');
+        function filterTools(category, element) {
+            document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            element.classList.add('active');
             
-            let selectedFile = null;
-
-            function renderTools(filter) {
-                let html = '';
-                toolsData.forEach(tool => {
-                    if (filter === 'all' || tool.cat === filter) {
-                        html += `
-                            <div class="tool-card" onclick="selectTool('${tool.format}', '${tool.title}')">
-                                <div class="card-icon ${tool.color}">${tool.icon}</div>
-                                <div class="card-content">
-                                    <h3>${tool.title}</h3>
-                                    <p>${tool.desc}</p>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-                toolList.innerHTML = html;
-            }
-
-            renderTools('all');
-
-            window.filterTools = function(category, element) {
-                document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-                element.classList.add('active');
-                renderTools(category);
-            };
-
-            window.selectTool = function(format, name) {
-                selectedFile = null;
-                fileNameDisplay.innerText = '';
-                downloadBtn.style.display = 'none';
-                progressBar.style.display = 'none';
-                convertBtn.disabled = false;
-                convertBtn.innerText = "Convert File";
-                convertBtn.style.background = "#1a73e8";
-                uploadIcon.innerText = "📁";
-                uploadText.innerText = "Tap to select a file";
-                uploadSub.innerText = "or drag and drop it here";
-                
-                formatSelect.value = format;
-                toolTitle.innerText = name;
-                
-                converterContainer.classList.add('active');
-                converterContainer.scrollIntoView({ behavior: 'smooth' });
-                
-                setTimeout(() => { fileInput.click(); }, 400);
-            };
-
-            window.cancelConversion = function() {
-                converterContainer.classList.remove('active');
-                selectedFile = null;
-                fileInput.value = '';
-            };
-
-            window.showHome = function() {
-                window.cancelConversion();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            };
-
-            function handleFileSelection(file) {
-                if (!file) return;
-                selectedFile = file;
-                uploadIcon.innerText = "✅";
-                uploadText.innerText = "File Selected";
-                uploadSub.innerText = "Tap again to change";
-                fileNameDisplay.innerText = file.name;
-            }
-
-            dropZone.addEventListener('click', () => fileInput.click());
-            
-            fileInput.addEventListener('change', function(e) {
-                if (e.target.files.length > 0) handleFileSelection(e.target.files[0]);
-            });
-
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.classList.add('dragover');
-            });
-            dropZone.addEventListener('dragleave', () => {
-                dropZone.classList.remove('dragover');
-            });
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-                if (e.dataTransfer.files.length > 0) handleFileSelection(e.dataTransfer.files[0]);
-            });
-
-            // --- LOCAL IMAGE COMPRESSOR (No API) ---
-            async function compressLocalImage(file) {
-                progressBar.style.display = 'block';
-                progress.style.width = '50%';
-                convertBtn.innerText = "Compressing...";
-                
-                return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = event => {
-                        const img = new Image();
-                        img.src = event.target.result;
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            const ctx = canvas.getContext('2d');
-                            // Resize to max 1920px width/height
-                            let width = img.width;
-                            let height = img.height;
-                            const max = 1920;
-                            if (width > max) { height *= max / width; width = max; }
-                            if (height > max) { width *= max / height; height = max; }
-                            
-                            canvas.width = width;
-                            canvas.height = height;
-                            ctx.drawImage(img, 0, 0, width, height);
-                            
-                            canvas.toBlob(blob => {
-                                const url = URL.createObjectURL(blob);
-                                resolve(url);
-                            }, 'image/jpeg', 0.6); // 60% quality compression
-                        };
-                    };
-                });
-            }
-
-            // --- MAIN CONVERSION FUNCTION ---
-            window.startConversion = async function() {
-                if (!selectedFile) { alert("Please select a file first!"); return; }
-                
-                const targetFormat = formatSelect.value;
-                progressBar.style.display = 'block';
-                progress.style.width = '20%';
-                convertBtn.disabled = true;
-                downloadBtn.style.display = 'none';
-                uploadIcon.innerText = "⏳";
-
-                // Check if it's the local image compressor
-                if (targetFormat === 'compress') {
-                    try {
-                        const compressedUrl = await compressLocalImage(selectedFile);
-                        progress.style.width = '100%';
-                        convertBtn.innerText = "Success! ✅";
-                        convertBtn.style.background = "#10b981";
-                        uploadIcon.innerText = "✅";
-                        downloadBtn.href = compressedUrl;
-                        downloadBtn.download = "compressed_" + selectedFile.name;
-                        downloadBtn.style.display = 'block';
-                    } catch (e) {
-                        alert("Compression failed.");
-                    } finally {
-                        convertBtn.disabled = false;
-                        setTimeout(() => {
-                            progressBar.style.display = 'none';
-                            convertBtn.innerText = "Compress File";
-                        }, 5000);
-                    }
-                    return;
+            document.querySelectorAll('.tool-card').forEach(card => {
+                if (category === 'all') {
+                    card.style.display = 'flex';
+                } else if (category === 'documents' && card.classList.contains('doc-card')) {
+                    card.style.display = 'flex';
+                } else if (category === 'pdf' && card.classList.contains('pdf-card')) {
+                    card.style.display = 'flex';
+                } else if (category === 'images' && card.classList.contains('image-card')) {
+                    card.style.display = 'flex';
+                } else if (category === 'media' && card.classList.contains('media-card')) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
                 }
+            });
+        }
 
-                // Otherwise, use CloudConvert API
-                if (API_KEY === "YOUR_API_KEY_HERE") { alert("Please add your CloudConvert API key!"); return; }
+        function selectTool(format, name) {
+            selectedFile = null;
+            fileNameDisplay.innerText = '';
+            downloadBtn.style.display = 'none';
+            progressBar.style.display = 'none';
+            convertBtn.disabled = false;
+            convertBtn.innerText = "Convert File";
+            convertBtn.style.background = "#1a73e8";
+            uploadIcon.innerText = "📁";
+            uploadText.innerText = "Tap to select a file";
+            uploadSub.innerText = "or drag and drop it here";
+            
+            formatSelect.value = format;
+            toolTitle.innerText = name;
+            
+            converterContainer.classList.add('active');
+            converterContainer.scrollIntoView({ behavior: 'smooth' });
+            
+            setTimeout(() => { fileInput.click(); }, 400);
+        }
 
-                convertBtn.innerText = "Uploading...";
+        function cancelConversion() {
+            converterContainer.classList.remove('active');
+            selectedFile = null;
+            fileInput.value = '';
+        }
 
+        function handleFileSelection(file) {
+            if (!file) return;
+            selectedFile = file;
+            uploadIcon.innerText = "✅";
+            uploadText.innerText = "File Selected";
+            uploadSub.innerText = "Tap again to change";
+            fileNameDisplay.innerText = file.name;
+        }
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) handleFileSelection(e.target.files[0]);
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) handleFileSelection(e.dataTransfer.files[0]);
+        });
+
+        async function compressLocalImage(file) {
+            progressBar.style.display = 'block';
+            progress.style.width = '50%';
+            convertBtn.innerText = "Compressing...";
+            
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = event => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        let width = img.width;
+                        let height = img.height;
+                        const max = 1920;
+                        if (width > max) { height *= max / width; width = max; }
+                        if (height > max) { width *= max / height; height = max; }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        canvas.toBlob(blob => {
+                            const url = URL.createObjectURL(blob);
+                            resolve(url);
+                        }, 'image/jpeg', 0.6); 
+                    };
+                };
+            });
+        }
+
+        async function startConversion() {
+            if (!selectedFile) { alert("Please select a file first!"); return; }
+            
+            const targetFormat = formatSelect.value;
+            progressBar.style.display = 'block';
+            progress.style.width = '20%';
+            convertBtn.disabled = true;
+            downloadBtn.style.display = 'none';
+            uploadIcon.innerText = "⏳";
+
+            if (targetFormat === 'compress') {
                 try {
-                    const jobRes = await fetch('https://api.cloudconvert.com/v2/jobs', {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            ta
+                    const compressedUrl = await compressLocalImage(selectedFile);
+                    progress.style.width = '100%';
+                    convertBtn.innerText = "Success! ✅";
+                    convertBtn.style.background = "#10b981";
+                    uploadIcon.innerText = "✅";
+                    downloadBtn.href = compressedUrl;
+                    downloadBtn.download = "compressed_" + selectedFile.name;
+                    downloadBtn.style.display = 'block';
+                } catch (e) {
+                    alert("Compression failed.");
+                } finally {
+                    convertBtn.disabled = false;
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                        convertBtn.innerText = "Compress File";
+                    }, 5000);
+                }
+                return;
+            }
+
+            if (API_KEY === "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiOTc0YWZlODY2Nzg2ZTMzNmZkMjU1MzAxNTE4NzIzYzZkMThmNjIyNWQwMjEwMDI2MjFkZmZjZjVmMWU5MjhlNjlkMjJmMWFjMzY3NTU5OGEiLCJpYXQiOjE3OTM1MjcyNTIuMTMyMDc0LCJuYmYiOjE3OTM1MjcyNTIuMTMyMDc1LCJleHAiOjQ5NDkyMDA4NTIuMTI0NTMzLCJzdWIiOiI3NzUxMDM1OSIsInNjb3BlcyI6WyJ1c2VyLnJlYWQiLCJ0YXNrLnJlYWQiLCJ0YXNrLndyaXRlIl19.JlFCzbccUtnpUHkmRVTDNNAWwEu9IVbm6tk8_OqCVIGXh0v72WhHpgxoBZaxt4rEdJxElfVp_tf_XLg7xYaKwTt-yYQdPukDtI2c4RwjmAJpZSHjEskEDfrco7l2I2aw0X6X4jUV4vpzi9j9noWj3PmWAgdXTk2H6iidadR3oGaQtq8ZkSUiZdCKNd0deNb6VDncuCWECySbnTArMrRXX8HISIc3xlIz1VKoEjlKIMSpHzZl5lKILH-PWxYSW_HodXkUw9_NpC7xhmIj0emeZ0lk5V7ox3jtSvSE9EICn_EdMB2V7TydSXR1S846uCdMBEtxGmVUM7j0hgYCP8a-Gg5-zXRMcAZswWs-frxnj1mZd-TI2q_Uy3ixzI_XcIjxhvj104x_8RuCplQ7t7NkAIGjfdbv5ex_EBMLJ38EhYN85TYBHjKYAuNCP8qYLMZ2ZavNUvCI8LhQYqLjytkSur6bHO3GveCSnQaak7_XBxumRDfrarA6tGN1SsAUa1LIS4Ygwq83zOeeZppqWCOUPNom52LDY_JZUtJ-twsg4nI2sDM58tCjgCxnY_pAU9i7YHgXESLlTY6-iK1IwPEFiqkD63SufFl6A9OZ5ocHaLZstrnOlM4Lm5I6RqDPyFbJFMTNU8qDrgqTOPsH-Z5SfQYMr-4HrPQSlrjcpjgxu1U") { alert("Please add your CloudConvert API key!"); return; }
+
+            convertBtn.innerText = "Uploading...";
+
+            try {
+                const jobRes = await fetch('https://api.cloudconvert.com/
