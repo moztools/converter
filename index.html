@@ -1,7 +1,3 @@
-          convertBtn.style.backgroundColor = "#34a853";
-                
-                const downloadUrl = exportTask.result.files[0].url;
-                d```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,6 +32,9 @@
         .progress-bar { width: 100%; background: #e2e8f0; border-radius: 8px; margin-top: 15px; display: none; overflow: hidden; }
         .progress { width: 0%; height: 15px; background: #10b981; transition: width 0.3s; }
         #downloadBtn { display: none; text-align: center; background: #10b981; color: white; text-decoration: none; padding: 15px; border-radius: 8px; font-weight: bold; margin-top: 15px; }
+        
+        .footer { text-align: center; padding: 30px 20px; margin-top: 40px; font-size: 14px; color: #64748b; border-top: 1px solid #e2e8f0; background: white; }
+        .footer a { color: #1a73e8; text-decoration: none; margin: 0 10px; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -101,6 +100,15 @@
         <button id="convertBtn" class="convert-btn" onclick="startConversion()">Convert File</button>
         <div class="progress-bar" id="progressBar"><div class="progress" id="progress"></div></div>
         <a id="downloadBtn" href="#" target="_blank">⬇️ Download Converted File</a>
+    </div>
+
+    <div class="footer">
+        <a href="index.html">Home</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="contact.html">Contact Us</a>
+        <br><br>
+        &copy; 2026 MozTools. All rights reserved.
     </div>
 
     <script>
@@ -209,27 +217,6 @@
                     progress.style.width = '0%';
                     convertBtn.innerText = "Convert File";
                     convertBtn.style.background = "#1a73e8";
-                }, 5000);
-            }
-        }
-    </script>
-</body>
-</html>
-```ownloadBtn.href = downloadUrl;
-                downloadArea.style.display = 'block';
-
-            } catch (error) {
-                alert("Error: " + error.message);
-                convertBtn.innerText = "Convert File";
-                convertBtn.style.backgroundColor = "#1a73e8";
-                progressBar.style.display = 'none';
-            } finally {
-                convertBtn.disabled = false;
-                setTimeout(() => {
-                    progressBar.style.display = 'none';
-                    progress.style.width = '0%';
-                    convertBtn.innerText = "Convert File";
-                    convertBtn.style.backgroundColor = "#1a73e8";
                 }, 5000);
             }
         }
