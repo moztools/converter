@@ -1,14 +1,357 @@
-        async function convertViaCloudConvert(file, format, progressElement) {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MozTools - All-in-One File Converter</title>
+    
+    <!-- GOOGLE ADSENSE CODE -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6101375220899594" crossorigin="anonymous"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fc; margin: 0; padding: 0; color: #1a1f36; }
+        
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .navbar h1 { margin: 0; font-size: 22px; font-weight: 700; color: #000; cursor: pointer; }
+        .navbar h1 span { color: #1a73e8; }
+        
+        .categories { display: flex; overflow-x: auto; padding: 15px 20px; gap: 10px; scrollbar-width: none; }
+        .categories::-webkit-scrollbar { display: none; }
+        .pill { padding: 8px 16px; background: white; border: 1px solid #d1d5db; border-radius: 20px; font-size: 14px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: 0.2s; }
+        .pill.active { background: #1a73e8; color: white; border-color: #1a73e8; }
+        
+        .tool-list { padding: 10px 20px 30px 20px; max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+        .tool-card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 20px; display: flex; align-items: flex-start; gap: 15px; cursor: pointer; transition: 0.2s; text-align: left; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+        .tool-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #cbd5e1; }
+        
+        .card-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; flex-shrink: 0; }
+        .bg-red { background: #fee2e2; color: #dc2626; }
+        .bg-blue { background: #e0f2fe; color: #0284c7; }
+        .bg-green { background: #dcfce7; color: #16a34a; }
+        .bg-purple { background: #f3e8ff; color: #9333ea; }
+        .bg-orange { background: #ffedd5; color: #ea580c; }
+        .bg-teal { background: #ccfbf1; color: #0d9488; }
+        
+        .card-content h3 { margin: 0 0 5px 0; font-size: 16px; font-weight: 700; }
+        .card-content p { margin: 0; font-size: 13px; color: #64748b; line-height: 1.4; }
+        
+        .converter-container { padding: 20px; max-width: 600px; margin: 0 auto 40px auto; display: none; }
+        .converter-container.active { display: block; }
+        .converter-box { background: white; border-radius: 16px; border: 1px solid #e5e7eb; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .converter-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .converter-header h2 { font-size: 20px; margin: 0; }
+        .close-btn { background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; font-weight: bold; padding: 5px; }
+        
+        .upload-box { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.3s; background: #f8fafc; user-select: none; }
+        .upload-box.dragover { background: #e0f2fe; border-color: #1a73e8; }
+        .upload-box:hover { border-color: #94a3b8; }
+        .upload-icon { font-size: 40px; margin-bottom: 10px; }
+        .upload-text { font-weight: 600; color: #1a73e8; font-size: 16px; }
+        .upload-sub { font-size: 13px; color: #64748b; margin-top: 5px; }
+        input[type="file"] { display: none; }
+        select { display: none; }
+        .file-info { margin-top: 15px; font-size: 14px; font-weight: 600; color: #10b981; text-align: center; word-break: break-all; }
+        
+        .actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; flex: 1; text-align: center; }
+        .btn-primary { background: #1a73e8; color: white; }
+        .btn-primary:disabled { background: #93c5fd; cursor: not-allowed; }
+        .btn-secondary { background: #f1f5f9; color: #475569; flex: 0.4; }
+        
+        .progress-bar { width: 100%; background: #e2e8f0; border-radius: 8px; margin-top: 15px; display: none; overflow: hidden; }
+        .progress { width: 0%; height: 10px; background: #10b981; transition: width 0.3s; }
+        #downloadBtn { display: none; background: #10b981; color: white; text-decoration: none; padding: 15px; border-radius: 8px; font-weight: bold; margin-top: 15px; text-align: center; }
+        
+        .how-to-section { max-width: 800px; margin: 40px auto; padding: 20px; background: white; border-radius: 16px; border: 1px solid #e5e7eb; }
+        .how-to-section h2 { color: #1a1f36; margin-top: 0; }
+        .how-to-section p { color: #475569; line-height: 1.6; }
+        .how-to-section ul { color: #475569; line-height: 1.8; }
+        
+        .footer { text-align: center; padding: 30px 20px; margin-top: 40px; font-size: 14px; color: #64748b; border-top: 1px solid #e2e8f0; background: white; }
+        .footer a { color: #1a73e8; text-decoration: none; margin: 0 10px; font-weight: 600; }
+        .visitor-counter { margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h1 onclick="window.scrollTo(0,0)">Moz<span>Tools</span></h1>
+        <div style="font-size: 24px; color: #64748b; cursor: pointer;">⋮⋮</div>
+    </div>
+    
+    <div class="categories" id="categories">
+        <div class="pill active" onclick="filterTools('all', this)">All Tools</div>
+        <div class="pill" onclick="filterTools('documents', this)">Documents</div>
+        <div class="pill" onclick="filterTools('pdf', this)">PDF Tools</div>
+        <div class="pill" onclick="filterTools('images', this)">Images</div>
+        <div class="pill" onclick="filterTools('media', this)">Audio & Video</div>
+    </div>
+    
+    <div class="tool-list" id="toolList">
+        <div class="tool-card image-card" onclick="openTool('compress', 'Compress Image')">
+            <div class="card-icon bg-orange">🗜️</div>
+            <div class="card-content"><h3>Compress Image</h3><p>Shrink large images instantly (No upload needed).</p></div>
+        </div>
+        <div class="tool-card doc-card" onclick="openTool('pdf', 'Create PDF')">
+            <div class="card-icon bg-red">📄</div>
+            <div class="card-content"><h3>Create PDF</h3><p>Convert photos and text into a clean PDF.</p></div>
+        </div>
+        <div class="tool-card doc-card" onclick="openTool('pdf', 'Word to PDF')">
+            <div class="card-icon bg-blue">📝</div>
+            <div class="card-content"><h3>Word to PDF</h3><p>Make your Word documents uneditable.</p></div>
+        </div>
+        <div class="tool-card doc-card" onclick="openTool('pdf', 'Excel to PDF')">
+            <div class="card-icon bg-green">📊</div>
+            <div class="card-content"><h3>Excel to PDF</h3><p>Convert spreadsheets into PDF files.</p></div>
+        </div>
+        <div class="tool-card pdf-card" onclick="openTool('docx', 'PDF to Word')">
+            <div class="card-icon bg-blue">📝</div>
+            <div class="card-content"><h3>PDF to Word</h3><p>Convert PDFs into editable Word files.</p></div>
+        </div>
+        <div class="tool-card pdf-card" onclick="openTool('xlsx', 'PDF to Excel')">
+            <div class="card-icon bg-green">📊</div>
+            <div class="card-content"><h3>PDF to Excel</h3><p>Extract tables into Excel spreadsheets.</p></div>
+        </div>
+        <div class="tool-card image-card" onclick="openTool('png', 'Convert to PNG')">
+            <div class="card-icon bg-green">🖼️</div>
+            <div class="card-content"><h3>Convert to PNG</h3><p>Upgrade images to high-quality PNG.</p></div>
+        </div>
+        <div class="tool-card image-card" onclick="openTool('jpg', 'Convert to JPG')">
+            <div class="card-icon bg-purple">📸</div>
+            <div class="card-content"><h3>Convert to JPG</h3><p>Shrink large images to standard JPG.</p></div>
+        </div>
+        <div class="tool-card media-card" onclick="openTool('mp3', 'Video to MP3')">
+            <div class="card-icon bg-teal">🎵</div>
+            <div class="card-content"><h3>Video to MP3</h3><p>Extract the audio track from any video.</p></div>
+        </div>
+    </div>
+
+    <div class="converter-container" id="converterContainer">
+        <div class="converter-box">
+            <div class="converter-header">
+                <h2 id="toolTitle">Convert File</h2>
+                <button class="close-btn" onclick="cancelConversion()">✕</button>
+            </div>
+            
+            <div class="upload-box" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon" id="uploadIcon">📁</div>
+                <div class="upload-text" id="uploadText">Tap to select a file</div>
+                <div class="upload-sub" id="uploadSub">or drag and drop it here</div>
+                <div class="file-info" id="fileName"></div>
+            </div>
+            
+            <input type="file" id="fileInput">
+            <select id="formatSelect">
+                <option value="pdf">PDF</option>
+                <option value="docx">Word (DOCX)</option>
+                <option value="xlsx">Excel (XLSX)</option>
+                <option value="pptx">PowerPoint (PPTX)</option>
+                <option value="txt">Text (TXT)</option>
+                <option value="png">PNG</option>
+                <option value="jpg">JPG</option>
+                <option value="mp3">MP3</option>
+            </select>
+            
+            <div class="progress-bar" id="progressBar"><div class="progress" id="progress"></div></div>
+            <a id="downloadBtn" href="#" target="_blank">⬇️ Download Converted File</a>
+            
+            <div class="actions" id="actionButtons">
+                <button class="btn btn-secondary" onclick="cancelConversion()">Cancel</button>
+                <button class="btn btn-primary" id="convertBtn" onclick="startConversion()">Convert File</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="how-to-section">
+        <h2>How to Convert Your Files for Free</h2>
+        <p>MozTools makes it incredibly easy to convert your files online without downloading any software. Here is how it works:</p>
+        <ul>
+            <li><strong>Step 1:</strong> Select the tool you need from our wide range of converters.</li>
+            <li><strong>Step 2:</strong> Upload your file by tapping the upload box, or simply drag and drop it from your computer.</li>
+            <li><strong>Step 3:</strong> Wait a few seconds while our secure engine processes your file.</li>
+            <li><strong>Step 4:</strong> Click the green download button to save your newly converted file!</li>
+        </ul>
+        <p>All our tools are completely free, work on mobile phones and desktop computers, and require no registration.</p>
+    </div>
+
+    <div class="footer">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="contact.html">Contact Us</a>
+        <br><br>
+        &copy; 2026 MozTools. All rights reserved.
+        
+        <div class="visitor-counter">
+            <img src="https://api.visitorbadge.io/api/visitors?path=moztools.github.io%2Fconverter%2F&countColor=%231a73e8" alt="Visitors"/>
+        </div>
+    </div>
+
+    <script>
+        // We use the Cloudflare Worker to get the URL securely
+        const WORKER_URL = "https://moztools-converter.kadurizvan.workers.dev"; 
+        
+        let selectedFile = null;
+
+        function filterTools(category, element) {
+            document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            element.classList.add('active');
+            document.querySelectorAll('.tool-card').forEach(card => {
+                if (category === 'all') { card.style.display = 'flex'; }
+                else if (category === 'documents' && card.classList.contains('doc-card')) { card.style.display = 'flex'; }
+                else if (category === 'pdf' && card.classList.contains('pdf-card')) { card.style.display = 'flex'; }
+                else if (category === 'images' && card.classList.contains('image-card')) { card.style.display = 'flex'; }
+                else if (category === 'media' && card.classList.contains('media-card')) { card.style.display = 'flex'; }
+                else { card.style.display = 'none'; }
+            });
+        }
+
+        function openTool(format, name) {
+            selectedFile = null;
+            document.getElementById('fileName').innerText = '';
+            document.getElementById('downloadBtn').style.display = 'none';
+            document.getElementById('progressBar').style.display = 'none';
+            document.getElementById('uploadIcon').innerText = "📁";
+            document.getElementById('uploadText').innerText = "Tap to select a file";
+            document.getElementById('uploadSub').innerText = "or drag and drop it here";
+            document.getElementById('formatSelect').value = format;
+            document.getElementById('toolTitle').innerText = name;
+            
+            let container = document.getElementById('converterContainer');
+            container.classList.add('active');
+            container.scrollIntoView({ behavior: 'smooth' });
+            
+            resetButton();
+        }
+
+        function cancelConversion() {
+            document.getElementById('converterContainer').classList.remove('active');
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+        }
+
+        function handleFileSelection(file) {
+            if (!file) return;
+            selectedFile = file;
+            document.getElementById('uploadIcon').innerText = "✅";
+            document.getElementById('uploadText').innerText = "File Selected";
+            document.getElementById('uploadSub').innerText = "Tap again to change";
+            document.getElementById('fileName').innerText = file.name;
+            document.getElementById('downloadBtn').style.display = 'none';
+        }
+
+        function resetButton() {
+            const btn = document.getElementById('convertBtn');
+            btn.disabled = false;
+            btn.innerText = "Convert File";
+            btn.style.backgroundColor = "#1a73e8";
+            document.getElementById('progressBar').style.display = 'none';
+            document.getElementById('progress').style.width = '0%';
+        }
+
+        window.addEventListener('load', function() {
+            let dropZone = document.getElementById('dropZone');
+            let fileInput = document.getElementById('fileInput');
+
+            dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('dragover'); });
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) handleFileSelection(e.dataTransfer.files[0]);
+            });
+
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) handleFileSelection(this.files[0]);
+            });
+        });
+
+        async function startConversion() {
+            if (!selectedFile) { alert("Please select a file first!"); return; }
+            
+            let targetFormat = document.getElementById('formatSelect').value;
+            let progressBar = document.getElementById('progressBar');
+            let progress = document.getElementById('progress');
+            let convertBtn = document.getElementById('convertBtn');
+            let downloadBtn = document.getElementById('downloadBtn');
+
+            progressBar.style.display = 'block';
+            progress.style.width = '20%';
+            convertBtn.disabled = true;
+            convertBtn.innerText = "Processing...";
+            downloadBtn.style.display = 'none';
+
+            try {
+                if (targetFormat === 'compress') {
+                    const compressedUrl = await compressLocalImage(selectedFile);
+                    progress.style.width = '100%';
+                    convertBtn.innerText = "Success! ✅";
+                    convertBtn.style.backgroundColor = "#10b981";
+                    downloadBtn.href = compressedUrl;
+                    downloadBtn.download = "compressed_" + selectedFile.name.split('.')[0] + ".jpg";
+                    downloadBtn.style.display = 'block';
+                } else {
+                    const downloadUrl = await convertViaRender(selectedFile, targetFormat, progress);
+                    progress.style.width = '100%';
+                    convertBtn.innerText = "Success! ✅";
+                    convertBtn.style.backgroundColor = "#10b981";
+                    downloadBtn.href = downloadUrl;
+                    downloadBtn.style.display = 'block';
+                }
+            } catch (error) {
+                alert("Error: " + error.message);
+                convertBtn.innerText = "Try Again";
+                convertBtn.style.backgroundColor = "#ef4444";
+            } finally {
+                setTimeout(() => { resetButton(); }, 5000);
+            }
+        }
+
+        async function compressLocalImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = event => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        try {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            let width = img.width;
+                            let height = img.height;
+                            const max = 1920;
+                            if (width > max) { height *= max / width; width = max; }
+                            if (height > max) { width *= max / height; height = max; }
+                            canvas.width = width;
+                            canvas.height = height;
+                            ctx.drawImage(img, 0, 0, width, height);
+                            canvas.toBlob(blob => {
+                                if (blob) resolve(URL.createObjectURL(blob));
+                                else reject(new Error("Canvas to Blob failed"));
+                            }, 'image/jpeg', 0.6);
+                        } catch (err) { reject(err); }
+                    };
+                    img.onerror = () => reject(new Error("Image load failed"));
+                };
+                reader.onerror = () => reject(new Error("File read failed"));
+            });
+        }
+
+        async function convertViaRender(file, format, progressElement) {
             progressElement.style.width = '20%';
             
-            // 1. Ask Cloudflare for the Render URL
+            // 1. Ask Cloudflare for the Render URL (Bypasses timeout issues)
             const urlRes = await fetch(WORKER_URL + "/get-render-url");
             const urlData = await urlRes.json();
             const RENDER_URL = urlData.url;
 
             progressElement.style.width = '30%';
             
-            // 2. Talk DIRECTLY to Render (No Cloudflare timeout!)
+            // 2. Talk DIRECTLY to Render
             const jobRes = await fetch(`${RENDER_URL}/api/v2/jobs`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -53,3 +396,6 @@
                 await new Promise(r => setTimeout(r, 2000));
             }
         }
+    </script>
+</body>
+</html>
