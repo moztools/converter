@@ -4,185 +4,249 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MozTools - All-in-One File Converter</title>
+<meta name="description" content="MozTools - Free online tools for images, PDF files, QR codes, calculators and documents. No software installation required.">
+<title>MozTools - Free Online Tools</title>
+
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6101375220899594" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 *{box-sizing:border-box}
-body{font-family:Inter,sans-serif;background:#f7f9fc;margin:0;color:#1a1f36}
-.navbar{display:flex;justify-content:space-between;align-items:center;padding:15px 20px;background:white;box-shadow:0 2px 10px #0000000d;position:sticky;top:0;z-index:100}
-.navbar h1{margin:0;font-size:22px;font-weight:700;color:#000;cursor:pointer}
-.navbar h1 span{color:#1a73e8}
-.categories{display:flex;overflow-x:auto;padding:15px 20px;gap:10px;scrollbar-width:none}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f7fb;color:#172033}
+button,input,textarea,select{font:inherit}
+.navbar{background:#fff;padding:16px 5%;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 12px #0000000b;position:sticky;top:0;z-index:50}
+.logo{font-size:25px;font-weight:800;color:#15243b;cursor:pointer}
+.logo span{color:#1674e8}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-links a{color:#334155;text-decoration:none;font-size:14px;font-weight:600}
+.hero{text-align:center;padding:55px 20px 35px;background:linear-gradient(135deg,#10294c,#1767bb);color:white}
+.hero h1{font-size:36px;margin:0 0 14px}
+.hero p{color:#e0ecff;max-width:600px;margin:0 auto 24px;line-height:1.6}
+.search-box{max-width:540px;margin:auto;display:flex;background:white;border-radius:12px;padding:5px;box-shadow:0 5px 20px #0002}
+.search-box input{border:0;outline:none;padding:13px;flex:1;min-width:0;border-radius:10px;color:#172033}
+.search-box button{border:0;background:#1674e8;color:white;padding:0 20px;border-radius:9px;font-weight:bold;cursor:pointer}
+.categories{display:flex;gap:9px;overflow-x:auto;padding:20px 5%;scrollbar-width:none}
 .categories::-webkit-scrollbar{display:none}
-.pill{padding:8px 16px;background:white;border:1px solid #d1d5db;border-radius:20px;font-size:14px;font-weight:600;white-space:nowrap;cursor:pointer}
-.pill.active{background:#1a73e8;color:white;border-color:#1a73e8}
-.tool-list{padding:10px 20px 30px;max-width:900px;margin:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}
-.tool-card{background:white;border:1px solid #e5e7eb;border-radius:16px;padding:20px;display:flex;align-items:flex-start;gap:15px;cursor:pointer;transition:.2s;text-align:left;user-select:none}
-.tool-card:hover{transform:translateY(-2px);box-shadow:0 10px 20px #0000000d}
-.card-icon{width:50px;height:50px;border-radius:12px;display:flex;justify-content:center;align-items:center;font-size:24px;flex-shrink:0}
-.bg-red{background:#fee2e2;color:#dc2626}
-.bg-blue{background:#e0f2fe;color:#0284c7}
-.bg-green{background:#dcfce7;color:#16a34a}
-.bg-purple{background:#f3e8ff;color:#9333ea}
-.bg-orange{background:#ffedd5;color:#ea580c}
-.bg-teal{background:#ccfbf1;color:#0d9488}
-.card-content h3{margin:0 0 5px;font-size:16px;font-weight:700}
-.card-content p{margin:0;font-size:13px;color:#64748b;line-height:1.4}
-.converter-container{padding:20px;max-width:600px;margin:0 auto 40px;display:none}
-.converter-container.active{display:block}
-.converter-box{background:white;border-radius:16px;border:1px solid #e5e7eb;padding:25px;box-shadow:0 4px 15px #0000000d}
-.converter-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.converter-header h2{font-size:20px;margin:0}
-.close-btn{background:none;border:0;font-size:20px;color:#94a3b8;cursor:pointer}
-.upload-box{border:2px dashed #cbd5e1;border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;background:#f8fafc}
-.upload-box.dragover{background:#e0f2fe;border-color:#1a73e8}
-.upload-icon{font-size:40px;margin-bottom:10px}
-.upload-text{font-weight:600;color:#1a73e8;font-size:16px}
-.upload-sub{font-size:13px;color:#64748b;margin-top:5px}
-input[type=file],select{display:none}
-.file-info{margin-top:15px;font-size:14px;font-weight:600;color:#10b981;text-align:center;word-break:break-all}
-.actions{display:flex;gap:10px;margin-top:20px}
-.btn{padding:15px;border:0;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;flex:1}
-.btn-primary{background:#1a73e8;color:white}
-.btn-primary:disabled{background:#93c5fd;cursor:not-allowed}
-.btn-secondary{background:#f1f5f9;color:#475569;flex:.4}
-.progress-bar{width:100%;background:#e2e8f0;border-radius:8px;margin-top:15px;display:none;overflow:hidden}
-.progress{width:0%;height:10px;background:#10b981;transition:width .3s}
-#downloadBtn{display:none;background:#10b981;color:white;text-decoration:none;padding:15px;border-radius:8px;font-weight:bold;margin-top:15px;text-align:center}
-.status-message{display:none;margin-top:14px;padding:12px;border-radius:8px;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
-.status-error{display:block;background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
-.how-to-section{max-width:800px;margin:40px auto;padding:20px;background:white;border-radius:16px;border:1px solid #e5e7eb}
-.how-to-section h2{color:#1a1f36;margin-top:0}
-.how-to-section p,.how-to-section ul{color:#475569;line-height:1.8}
-.footer{text-align:center;padding:30px 20px;margin-top:40px;font-size:14px;color:#64748b;border-top:1px solid #e2e8f0;background:white}
-.footer a{color:#1a73e8;text-decoration:none;margin:0 10px;font-weight:600}
-.visitor-counter{margin-top:15px}
+.pill{border:1px solid #dce3ec;background:white;color:#334155;border-radius:25px;padding:10px 17px;white-space:nowrap;font-size:13px;font-weight:700;cursor:pointer}
+.pill.active{background:#1674e8;color:white;border-color:#1674e8}
+.section-title{max-width:1100px;margin:10px auto 18px;padding:0 20px}
+.section-title h2{font-size:23px;margin:0 0 7px}
+.section-title p{font-size:14px;color:#64748b;margin:0}
+.tool-list{max-width:1100px;margin:auto;padding:0 20px 35px;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:15px}
+.tool-card{background:white;border:1px solid #e5eaf0;border-radius:14px;padding:19px;display:flex;gap:14px;align-items:center;text-align:left;cursor:pointer;transition:.2s;min-height:105px}
+.tool-card:hover{transform:translateY(-3px);box-shadow:0 8px 22px #00000010;border-color:#b8d4fa}
+.card-icon{width:48px;height:48px;flex-shrink:0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.bg-blue{background:#e3efff}
+.bg-green{background:#dcfce7}
+.bg-purple{background:#f3e8ff}
+.bg-orange{background:#ffedd5}
+.bg-red{background:#fee2e2}
+.bg-teal{background:#ccfbf1}
+.card-content h3{font-size:15px;margin:0 0 6px}
+.card-content p{font-size:12px;color:#64748b;line-height:1.5;margin:0}
+.tool-panel{display:none;max-width:650px;margin:10px auto 40px;padding:0 15px}
+.tool-panel.active{display:block}
+.panel-box{background:white;border:1px solid #e3e8ef;border-radius:16px;padding:24px;box-shadow:0 5px 20px #00000009}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.panel-head h2{font-size:21px;margin:0}
+.close-btn{border:0;background:#f1f5f9;border-radius:8px;padding:8px 12px;cursor:pointer;color:#475569}
+.field{margin:15px 0}
+.field label{display:block;font-size:13px;font-weight:700;margin-bottom:7px;color:#334155}
+.field input,.field textarea,.field select{display:block;width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:12px;background:white;outline:none;color:#172033}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:#1674e8}
+.primary{background:#1674e8;color:white;border:0;border-radius:9px;padding:13px 18px;font-weight:700;cursor:pointer;width:100%;margin-top:10px}
+.secondary{background:#eef2f7;color:#334155;border:0;border-radius:9px;padding:12px 16px;font-weight:700;cursor:pointer}
+.result{margin-top:17px;padding:15px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;color:#164e91;display:none;line-height:1.6;overflow-wrap:anywhere}
+.result.show{display:block}
+.upload-box{border:2px dashed #cbd5e1;border-radius:12px;padding:30px 15px;text-align:center;background:#f8fafc;cursor:pointer}
+.upload-box strong{color:#1674e8}
+.upload-box p{font-size:13px;color:#64748b;margin:8px 0 0}
+.file-info{font-size:13px;color:#059669;margin-top:12px;text-align:center;overflow-wrap:anywhere}
+.preview{max-width:100%;max-height:260px;display:block;margin:15px auto;border-radius:10px}
+.actions{display:flex;gap:10px;margin-top:15px}
+.actions button{flex:1}
+.progress-bar{height:9px;background:#e2e8f0;border-radius:20px;overflow:hidden;margin-top:15px;display:none}
+.progress{height:100%;width:0;background:#10b981;transition:width .3s}
+.download{display:none;margin-top:15px;padding:13px;background:#10b981;color:white;text-decoration:none;text-align:center;border-radius:9px;font-weight:bold}
+.status{margin-top:15px;padding:12px;border-radius:8px;font-size:13px;display:none;line-height:1.5;overflow-wrap:anywhere}
+.error{display:block;background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.success{display:block;background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+.how{max-width:900px;margin:30px auto;padding:25px 20px;background:white;border:1px solid #e5eaf0;border-radius:14px;line-height:1.8;color:#475569}
+.how h2{color:#172033;margin-top:0}
+.footer{text-align:center;background:white;border-top:1px solid #e2e8f0;padding:30px 15px;color:#64748b;font-size:13px;line-height:2}
+.footer a{color:#1674e8;text-decoration:none;margin:0 8px;font-weight:600}
+.empty{text-align:center;color:#64748b;padding:35px;display:none}
+.qr-area{display:flex;justify-content:center;margin:20px 0}
+#qrcode{padding:12px;background:white;display:inline-block}
+#qrcode img,#qrcode canvas{display:block}
+.small-note{font-size:12px;color:#64748b;line-height:1.5;margin-top:10px}
+@media(max-width:600px){
+.navbar{padding:14px 17px}
+.nav-links{gap:10px}
+.nav-links a{font-size:12px}
+.hero{padding:42px 17px 30px}
+.hero h1{font-size:29px}
+.section-title h2{font-size:20px}
+.tool-list{grid-template-columns:1fr;padding:0 15px 25px}
+.tool-card{min-height:88px}
+.panel-box{padding:18px}
+}
 </style>
 </head>
 
 <body>
 
-<div class="navbar">
-<h1 onclick="window.scrollTo(0,0)">Moz<span>Tools</span></h1>
-<div style="font-size:24px;color:#64748b">⋮⋮</div>
+<header class="navbar">
+<div class="logo" onclick="goHome()">Moz<span>Tools</span></div>
+<nav class="nav-links">
+<a href="#tools">All Tools</a>
+<a href="#about">About</a>
+</nav>
+</header>
+
+<section class="hero">
+<h1>Free Online Tools for Everyone</h1>
+<p>Compress images, convert files, create QR codes and use helpful calculators. Fast, simple and free.</p>
+<div class="search-box">
+<input id="searchInput" type="search" placeholder="Search for a tool..." oninput="searchTools()">
+<button onclick="searchTools()">Search</button>
+</div>
+</section>
+
+<div class="categories" id="categories">
+<button class="pill active" onclick="filterTools('all',this)">All Tools</button>
+<button class="pill" onclick="filterTools('images',this)">Image Tools</button>
+<button class="pill" onclick="filterTools('pdf',this)">PDF Tools</button>
+<button class="pill" onclick="filterTools('qr',this)">QR Tools</button>
+<button class="pill" onclick="filterTools('calculators',this)">Calculators</button>
+<button class="pill" onclick="filterTools('text',this)">Text Tools</button>
+<button class="pill" onclick="filterTools('media',this)">Audio & Video</button>
 </div>
 
-<div class="categories">
-<div class="pill active" onclick="filterTools('all',this)">All Tools</div>
-<div class="pill" onclick="filterTools('documents',this)">Documents</div>
-<div class="pill" onclick="filterTools('pdf',this)">PDF Tools</div>
-<div class="pill" onclick="filterTools('images',this)">Images</div>
-<div class="pill" onclick="filterTools('media',this)">Audio & Video</div>
+<div class="section-title" id="tools">
+<h2>Explore All Tools</h2>
+<p>Choose a tool and get started. No installation required.</p>
 </div>
 
-<div class="tool-list">
+<div class="tool-list" id="toolList">
 
-<div class="tool-card image-card" onclick="openTool('compress','Compress Image')">
+<div class="tool-card" data-category="images" data-name="compress image" onclick="openTool('compress','Compress Image')">
 <div class="card-icon bg-orange">🗜️</div>
-<div class="card-content"><h3>Compress Image</h3><p>Shrink large images instantly (No upload needed).</p></div>
+<div class="card-content"><h3>Compress Image</h3><p>Reduce image file size in your browser.</p></div>
 </div>
 
-<div class="tool-card doc-card" onclick="openTool('pdf','Create PDF')">
+<div class="tool-card" data-category="images" data-name="resize image" onclick="openTool('resize','Resize Image')">
+<div class="card-icon bg-blue">📐</div>
+<div class="card-content"><h3>Resize Image</h3><p>Change image width and height.</p></div>
+</div>
+
+<div class="tool-card" data-category="images" data-name="convert to png" onclick="openTool('png','Convert to PNG')">
+<div class="card-icon bg-green">🖼️</div>
+<div class="card-content"><h3>Convert to PNG</h3><p>Convert images into PNG format.</p></div>
+</div>
+
+<div class="tool-card" data-category="images" data-name="convert to jpg jpeg" onclick="openTool('jpg','Convert to JPG')">
+<div class="card-icon bg-purple">📸</div>
+<div class="card-content"><h3>Convert to JPG</h3><p>Convert images into JPG format.</p></div>
+</div>
+
+<div class="tool-card" data-category="qr" data-name="qr code generator" onclick="openTool('qr','QR Code Generator')">
+<div class="card-icon bg-teal">▦</div>
+<div class="card-content"><h3>QR Code Generator</h3><p>Create a QR code from text or a website link.</p></div>
+</div>
+
+<div class="tool-card" data-category="calculators" data-name="age calculator" onclick="openTool('age','Age Calculator')">
+<div class="card-icon bg-blue">🎂</div>
+<div class="card-content"><h3>Age Calculator</h3><p>Calculate your age in years, months and days.</p></div>
+</div>
+
+<div class="tool-card" data-category="calculators" data-name="bmi calculator" onclick="openTool('bmi','BMI Calculator')">
+<div class="card-icon bg-green">⚖️</div>
+<div class="card-content"><h3>BMI Calculator</h3><p>Calculate your body mass index.</p></div>
+</div>
+
+<div class="tool-card" data-category="calculators" data-name="percentage calculator" onclick="openTool('percentage','Percentage Calculator')">
+<div class="card-icon bg-purple">％</div>
+<div class="card-content"><h3>Percentage Calculator</h3><p>Calculate percentages quickly.</p></div>
+</div>
+
+<div class="tool-card" data-category="calculators" data-name="discount calculator" onclick="openTool('discount','Discount Calculator')">
+<div class="card-icon bg-orange">🏷️</div>
+<div class="card-content"><h3>Discount Calculator</h3><p>Find the final price after a discount.</p></div>
+</div>
+
+<div class="tool-card" data-category="text" data-name="word counter character counter" onclick="openTool('word','Word Counter')">
+<div class="card-icon bg-red">📝</div>
+<div class="card-content"><h3>Word Counter</h3><p>Count words, characters and sentences.</p></div>
+</div>
+
+<div class="tool-card" data-category="pdf" data-name="create pdf" onclick="openTool('pdf','Create PDF')">
 <div class="card-icon bg-red">📄</div>
-<div class="card-content"><h3>Create PDF</h3><p>Convert photos and text into a clean PDF.</p></div>
+<div class="card-content"><h3>Create PDF</h3><p>Convert a supported file into PDF.</p></div>
 </div>
 
-<div class="tool-card doc-card" onclick="openTool('pdf','Word to PDF')">
+<div class="tool-card" data-category="pdf" data-name="word to pdf" onclick="openTool('pdf','Word to PDF')">
 <div class="card-icon bg-blue">📝</div>
-<div class="card-content"><h3>Word to PDF</h3><p>Make your Word documents uneditable.</p></div>
+<div class="card-content"><h3>Word to PDF</h3><p>Convert Word documents into PDF.</p></div>
 </div>
 
-<div class="tool-card doc-card" onclick="openTool('pdf','Excel to PDF')">
+<div class="tool-card" data-category="pdf" data-name="excel to pdf" onclick="openTool('pdf','Excel to PDF')">
 <div class="card-icon bg-green">📊</div>
-<div class="card-content"><h3>Excel to PDF</h3><p>Convert spreadsheets into PDF files.</p></div>
+<div class="card-content"><h3>Excel to PDF</h3><p>Convert spreadsheets into PDF.</p></div>
 </div>
 
-<div class="tool-card pdf-card" onclick="openTool('docx','PDF to Word')">
-<div class="card-icon bg-blue">📝</div>
-<div class="card-content"><h3>PDF to Word</h3><p>Convert PDFs into editable Word files.</p></div>
+<div class="tool-card" data-category="pdf" data-name="pdf to word" onclick="openTool('docx','PDF to Word')">
+<div class="card-icon bg-blue">📃</div>
+<div class="card-content"><h3>PDF to Word</h3><p>Convert PDF into editable Word files.</p></div>
 </div>
 
-<div class="tool-card pdf-card" onclick="openTool('xlsx','PDF to Excel')">
+<div class="tool-card" data-category="pdf" data-name="pdf to excel" onclick="openTool('xlsx','PDF to Excel')">
 <div class="card-icon bg-green">📊</div>
 <div class="card-content"><h3>PDF to Excel</h3><p>Extract tables into Excel spreadsheets.</p></div>
 </div>
 
-<div class="tool-card image-card" onclick="openTool('png','Convert to PNG')">
-<div class="card-icon bg-green">🖼️</div>
-<div class="card-content"><h3>Convert to PNG</h3><p>Upgrade images to high-quality PNG.</p></div>
-</div>
-
-<div class="tool-card image-card" onclick="openTool('jpg','Convert to JPG')">
-<div class="card-icon bg-purple">📸</div>
-<div class="card-content"><h3>Convert to JPG</h3><p>Shrink large images to standard JPG.</p></div>
-</div>
-
-<div class="tool-card media-card" onclick="openTool('mp3','Video to MP3')">
+<div class="tool-card" data-category="media" data-name="video to mp3 audio" onclick="openTool('mp3','Video to MP3')">
 <div class="card-icon bg-teal">🎵</div>
-<div class="card-content"><h3>Video to MP3</h3><p>Extract the audio track from any video.</p></div>
+<div class="card-content"><h3>Video to MP3</h3><p>Extract audio from supported video files.</p></div>
 </div>
 
 </div>
 
-<div class="converter-container" id="converterContainer">
-<div class="converter-box">
+<div class="empty" id="emptyMessage">No tools found. Try another search.</div>
 
-<div class="converter-header">
-<h2 id="toolTitle">Convert File</h2>
-<button class="close-btn" onclick="cancelConversion()">✕</button>
+<div class="tool-panel" id="toolPanel">
+<div class="panel-box">
+<div class="panel-head">
+<h2 id="panelTitle">Tool</h2>
+<button class="close-btn" onclick="closeTool()">✕ Close</button>
 </div>
 
-<div class="upload-box" id="dropZone" onclick="document.getElementById('fileInput').click()">
-<div class="upload-icon" id="uploadIcon">📁</div>
-<div class="upload-text" id="uploadText">Tap to select a file</div>
-<div class="upload-sub" id="uploadSub">or drag and drop it here</div>
-<div class="file-info" id="fileName"></div>
-</div>
-
-<input type="file" id="fileInput">
-
-<div class="progress-bar" id="progressBar">
-<div class="progress" id="progress"></div>
-</div>
-
-<a id="downloadBtn" href="#" rel="noopener">⬇️ Download Converted File</a>
-
-<div class="status-message" id="statusMessage" role="alert"></div>
-
-<div class="actions">
-<button class="btn btn-secondary" onclick="cancelConversion()">Cancel</button>
-<button class="btn btn-primary" id="convertBtn" onclick="startConversion()">Convert File</button>
-</div>
-
+<div id="toolContent"></div>
+<div class="status" id="statusMessage"></div>
 </div>
 </div>
 
-<div class="how-to-section">
-<h2>How to Convert Your Files for Free</h2>
-<p>MozTools makes it incredibly easy to convert your files online without downloading any software.</p>
+<section class="how" id="about">
+<h2>Welcome to MozTools</h2>
+<p>MozTools provides free online utilities for everyday tasks. Use our image tools, calculators, QR code generator and document conversion services directly from your browser.</p>
+<h3>Why use MozTools?</h3>
 <ul>
-<li><strong>Step 1:</strong> Select the tool you need.</li>
-<li><strong>Step 2:</strong> Upload your file.</li>
-<li><strong>Step 3:</strong> Wait while our conversion engine processes your file.</li>
-<li><strong>Step 4:</strong> Download your converted file.</li>
+<li>Free tools for everyday use.</li>
+<li>Works on mobile phones, tablets and computers.</li>
+<li>No software installation required for browser-based tools.</li>
+<li>Simple and easy-to-use interface.</li>
 </ul>
-<p>Our tools work on mobile phones and desktop computers.</p>
-</div>
+</section>
 
-<div class="footer">
+<footer class="footer">
 <a href="index.html">Home</a>
 <a href="about.html">About Us</a>
 <a href="privacy.html">Privacy Policy</a>
 <a href="terms.html">Terms of Service</a>
 <a href="contact.html">Contact Us</a>
-<br><br>
+<br>
 &copy; 2026 MozTools. All rights reserved.
-<div class="visitor-counter">
-<img src="https://api.visitorbadge.io/api/visitors?path=moztools.github.io%2Fconverter%2F&countColor=%231a73e8" alt="Visitors">
-</div>
-</div>
+</footer>
 
 <script>
 const WORKER_URL="https://moztools-converter.kadurizvan.workers.dev";
@@ -191,346 +255,142 @@ const API_PREFIX=WORKER_URL+"/proxy/api";
 let selectedFile=null;
 let currentTool="";
 let downloadObjectUrl=null;
+let qrInstance=null;
 
-function filterTools(category,element){
+function goHome(){
+closeTool();
+window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function filterTools(category,button){
 document.querySelectorAll(".pill").forEach(p=>p.classList.remove("active"));
-element.classList.add("active");
+button.classList.add("active");
 
 document.querySelectorAll(".tool-card").forEach(card=>{
-const show=category==="all"||
-(category==="documents"&&card.classList.contains("doc-card"))||
-(category==="pdf"&&card.classList.contains("pdf-card"))||
-(category==="images"&&card.classList.contains("image-card"))||
-(category==="media"&&card.classList.contains("media-card"));
-card.style.display=show?"flex":"none";
+card.style.display=(category==="all"||card.dataset.category===category)?"flex":"none";
 });
+document.getElementById("searchInput").value="";
+document.getElementById("emptyMessage").style.display="none";
 }
 
-function showError(message){
+function searchTools(){
+const value=document.getElementById("searchInput").value.toLowerCase().trim();
+document.querySelectorAll(".pill").forEach(p=>p.classList.remove("active"));
+document.querySelectorAll(".tool-card").forEach(card=>{
+const match=card.dataset.name.includes(value)||card.innerText.toLowerCase().includes(value);
+card.style.display=match?"flex":"none";
+});
+let visible=[...document.querySelectorAll(".tool-card")].some(c=>c.style.display!=="none");
+document.getElementById("emptyMessage").style.display=visible?"none":"block";
+}
+
+function setStatus(message,type){
 const box=document.getElementById("statusMessage");
 box.textContent=message;
-box.className="status-message status-error";
+box.className="status "+type;
 }
 
-function clearMessage(){
+function clearStatus(){
 const box=document.getElementById("statusMessage");
 box.textContent="";
-box.className="status-message";
+box.className="status";
 }
 
-function openTool(format,name){
+function closeTool(){
+document.getElementById("toolPanel").classList.remove("active");
 selectedFile=null;
-currentTool=format;
-
-document.getElementById("fileInput").value="";
-document.getElementById("fileName").textContent="";
-document.getElementById("downloadBtn").style.display="none";
-document.getElementById("progressBar").style.display="none";
-document.getElementById("uploadIcon").textContent="📁";
-document.getElementById("uploadText").textContent="Tap to select a file";
-document.getElementById("uploadSub").textContent="or drag and drop it here";
-document.getElementById("toolTitle").textContent=name;
-
-clearMessage();
-
+currentTool="";
 if(downloadObjectUrl){
 URL.revokeObjectURL(downloadObjectUrl);
 downloadObjectUrl=null;
 }
-
-const input=document.getElementById("fileInput");
-
-if(format==="xlsx") input.accept=".pdf,application/pdf";
-else if(format==="docx") input.accept=".pdf,application/pdf";
-else if(format==="png"||format==="jpg"||format==="compress") input.accept="image/*";
-else if(format==="mp3") input.accept="video/*";
-else input.accept="*/*";
-
-document.getElementById("converterContainer").classList.add("active");
-document.getElementById("converterContainer").scrollIntoView({behavior:"smooth"});
-resetButton();
 }
 
-function cancelConversion(){
-document.getElementById("converterContainer").classList.remove("active");
-selectedFile=null;
-currentTool="";
-document.getElementById("fileInput").value="";
-clearMessage();
+function openTool(tool,title){
+closeTool();
+currentTool=tool;
+clearStatus();
+document.getElementById("panelTitle").textContent=title;
+const content=document.getElementById("toolContent");
+
+if(tool==="compress"||tool==="resize"||tool==="png"||tool==="jpg"){
+content.innerHTML=`
+<div class="upload-box" onclick="document.getElementById('imageFile').click()">
+<div style="font-size:35px">📁</div>
+<strong>Select an image</strong>
+<p>Choose JPG, PNG, WebP or another browser-supported image</p>
+</div>
+<input type="file" id="imageFile" accept="image/*" hidden onchange="selectImage(this)">
+<div class="file-info" id="imageInfo"></div>
+<img id="imagePreview" class="preview" style="display:none">
+<div id="imageOptions"></div>
+<button class="primary" onclick="processImage()">Process Image</button>
+<a id="localDownload" class="download" href="#" download>⬇ Download Image</a>
+<div class="small-note">Image processing happens in your browser. Your image is not uploaded to our conversion server.</div>`;
+if(tool==="resize"){
+document.getElementById("imageOptions").innerHTML=`
+<div class="field"><label>Width (pixels)</label><input id="imageWidth" type="number" min="1" placeholder="Example: 800"></div>
+<div class="field"><label>Height (pixels)</label><input id="imageHeight" type="number" min="1" placeholder="Example: 600"></div>
+<label><input id="keepRatio" type="checkbox" checked> Keep original proportions</label>`;
 }
-
-function handleFileSelection(file){
-if(!file)return;
-
-if(currentTool==="xlsx"&&file.type!=="application/pdf"&&!file.name.toLowerCase().endsWith(".pdf")){
-showError("Please select a PDF file for PDF to Excel.");
-return;
-}
-
-selectedFile=file;
-document.getElementById("uploadIcon").textContent="✅";
-document.getElementById("uploadText").textContent="File Selected";
-document.getElementById("uploadSub").textContent="Tap again to change";
-document.getElementById("fileName").textContent=file.name;
-document.getElementById("downloadBtn").style.display="none";
-clearMessage();
-}
-
-function resetButton(){
-const btn=document.getElementById("convertBtn");
-btn.disabled=false;
-btn.textContent="Convert File";
-btn.style.backgroundColor="#1a73e8";
-document.getElementById("progressBar").style.display="none";
-document.getElementById("progress").style.width="0%";
-}
-
-window.addEventListener("load",function(){
-const dropZone=document.getElementById("dropZone");
-const fileInput=document.getElementById("fileInput");
-
-dropZone.addEventListener("dragover",function(e){
-e.preventDefault();
-dropZone.classList.add("dragover");
-});
-
-dropZone.addEventListener("dragleave",function(){
-dropZone.classList.remove("dragover");
-});
-
-dropZone.addEventListener("drop",function(e){
-e.preventDefault();
-dropZone.classList.remove("dragover");
-if(e.dataTransfer.files.length)handleFileSelection(e.dataTransfer.files[0]);
-});
-
-fileInput.addEventListener("change",function(){
-if(this.files.length)handleFileSelection(this.files[0]);
-});
-});
-
-async function readApiResponse(response){
-const contentType=response.headers.get("content-type")||"";
-if(contentType.includes("application/json"))return await response.json();
-const text=await response.text();
-return {detail:text};
-}
-
-function getErrorMessage(data,fallback){
-if(data&&typeof data.detail==="string")return data.detail;
-if(data&&data.detail)return JSON.stringify(data.detail);
-if(data&&typeof data.message==="string")return data.message;
-if(data&&typeof data.error==="string")return data.error;
-return fallback;
-}
-
-async function apiRequest(url,options={}){
-let response;
-
-try{
-response=await fetch(url,options);
-}catch(error){
-throw new Error("Could not connect to the conversion server. Please try again.");
-}
-
-if(!response.ok){
-const errorData=await readApiResponse(response);
-throw new Error("HTTP "+response.status+": "+getErrorMessage(errorData,"Server error"));
-}
-
-return response;
-}
-
-async function startConversion(){
-if(!selectedFile){
-alert("Please select a file first!");
-return;
-}
-
-const progressBar=document.getElementById("progressBar");
-const progress=document.getElementById("progress");
-const convertBtn=document.getElementById("convertBtn");
-const downloadBtn=document.getElementById("downloadBtn");
-
-clearMessage();
-progressBar.style.display="block";
-progress.style.width="5%";
-convertBtn.disabled=true;
-convertBtn.textContent="Processing...";
-downloadBtn.style.display="none";
-
-try{
-let result;
-
-if(currentTool==="compress"){
-if(!selectedFile.type.startsWith("image/"))throw new Error("Please select an image file.");
-convertBtn.textContent="Compressing Image...";
-const url=await compressLocalImage(selectedFile);
-result={url:url,filename:"compressed_"+selectedFile.name.replace(/\.[^/.]+$/,"")+".jpg"};
+}else if(tool==="qr"){
+content.innerHTML=`
+<div class="field"><label>Enter text or website URL</label><textarea id="qrText" rows="3" placeholder="https://example.com"></textarea></div>
+<div class="field"><label>QR Code size</label><select id="qrSize"><option value="180">180 x 180</option><option value="250" selected>250 x 250</option><option value="350">350 x 350</option></select></div>
+<button class="primary" onclick="generateQR()">Generate QR Code</button>
+<div class="qr-area"><div id="qrcode"></div></div>
+<a id="qrDownload" class="download" download="moztools-qr.png">⬇ Download QR Code</a>`;
+}else if(tool==="age"){
+content.innerHTML=`
+<div class="field"><label>Your date of birth</label><input type="date" id="birthDate"></div>
+<button class="primary" onclick="calculateAge()">Calculate Age</button>
+<div class="result" id="ageResult"></div>`;
+}else if(tool==="bmi"){
+content.innerHTML=`
+<div class="field"><label>Weight (kg)</label><input type="number" id="weight" min="1" placeholder="Example: 75"></div>
+<div class="field"><label>Height (cm)</label><input type="number" id="height" min="1" placeholder="Example: 175"></div>
+<button class="primary" onclick="calculateBMI()">Calculate BMI</button>
+<div class="result" id="bmiResult"></div>
+<p class="small-note">BMI is a general screening measure, not a medical diagnosis.</p>`;
+}else if(tool==="percentage"){
+content.innerHTML=`
+<div class="field"><label>What is the percentage?</label><input type="number" id="percentValue" placeholder="Example: 20"></div>
+<div class="field"><label>Of this number</label><input type="number" id="percentTotal" placeholder="Example: 500"></div>
+<button class="primary" onclick="calculatePercentage()">Calculate</button>
+<div class="result" id="percentageResult"></div>`;
+}else if(tool==="discount"){
+content.innerHTML=`
+<div class="field"><label>Original price</label><input type="number" id="originalPrice" min="0" placeholder="Example: 1000"></div>
+<div class="field"><label>Discount (%)</label><input type="number" id="discountPercent" min="0" max="100" placeholder="Example: 15"></div>
+<button class="primary" onclick="calculateDiscount()">Calculate Discount</button>
+<div class="result" id="discountResult"></div>`;
+}else if(tool==="word"){
+content.innerHTML=`
+<div class="field"><label>Enter or paste your text</label><textarea id="wordText" rows="7" placeholder="Start typing here..." oninput="countWords()"></textarea></div>
+<div class="result show" id="wordResult">Words: 0 | Characters: 0 | Sentences: 0</div>`;
 }else{
-convertBtn.textContent="Uploading File...";
-result=await convertViaProxy(selectedFile,currentTool,progress);
+content.innerHTML=`
+<div class="upload-box" onclick="document.getElementById('serverFile').click()">
+<div style="font-size:35px">📁</div>
+<strong>Select a file</strong>
+<p>Tap here to choose a file from your device</p>
+</div>
+<input type="file" id="serverFile" hidden onchange="selectServerFile(this)">
+<div class="file-info" id="serverFileInfo"></div>
+<div class="progress-bar" id="progressBar"><div class="progress" id="progress"></div></div>
+<a id="serverDownload" class="download" href="#" download>⬇ Download Converted File</a>
+<button class="primary" id="serverButton" onclick="startServerConversion()">Convert File</button>
+<p class="small-note">File conversion uses our online conversion server. Availability depends on the selected conversion format.</p>`;
 }
 
-downloadObjectUrl=result.url;
-downloadBtn.href=result.url;
-downloadBtn.download=result.filename;
-
-progress.style.width="100%";
-convertBtn.textContent="Success! ✅";
-convertBtn.style.backgroundColor="#10b981";
-downloadBtn.style.display="block";
-
-}catch(error){
-console.error("MozTools error:",error);
-showError(error.message||"Conversion failed.");
-convertBtn.textContent="Try Again";
-convertBtn.style.backgroundColor="#ef4444";
-convertBtn.disabled=false;
-}finally{
-if(convertBtn.textContent==="Success! ✅"){
-setTimeout(resetButton,5000);
-}
-}
+document.getElementById("toolPanel").classList.add("active");
+document.getElementById("toolPanel").scrollIntoView({behavior:"smooth",block:"start"});
 }
 
-async function compressLocalImage(file){
-return new Promise((resolve,reject)=>{
-const reader=new FileReader();
-reader.readAsDataURL(file);
-
-reader.onload=event=>{
-const img=new Image();
-img.src=event.target.result;
-
-img.onload=()=>{
-try{
-const canvas=document.createElement("canvas");
-const ctx=canvas.getContext("2d");
-let width=img.width;
-let height=img.height;
-const max=1920;
-
-if(width>max){height*=max/width;width=max;}
-if(height>max){width*=max/height;height=max;}
-
-canvas.width=Math.round(width);
-canvas.height=Math.round(height);
-ctx.drawImage(img,0,0,canvas.width,canvas.height);
-
-canvas.toBlob(blob=>{
-if(blob)resolve(URL.createObjectURL(blob));
-else reject(new Error("Image compression failed."));
-},"image/jpeg",0.6);
-}catch(error){reject(error);}
-};
-
-img.onerror=()=>reject(new Error("Image could not be opened."));
-};
-
-reader.onerror=()=>reject(new Error("File could not be read."));
-});
+function showResult(id,message){
+const el=document.getElementById(id);
+el.innerHTML=message;
+el.classList.add("show");
 }
 
-async function convertViaProxy(file,format,progressElement){
-
-// Transmute uses jpeg for JPG.
-const outputFormat=format==="jpg"?"jpeg":format;
-
-// Upload file.
-progressElement.style.width="10%";
-const formData=new FormData();
-formData.append("file",file);
-
-const uploadResponse=await apiRequest(API_PREFIX+"/files",{
-method:"POST",
-body:formData
-});
-
-const uploadData=await readApiResponse(uploadResponse);
-
-if(!uploadData.metadata||!uploadData.metadata.id){
-throw new Error("Upload succeeded, but the server did not return metadata.id.");
-}
-
-const uploadedFileId=uploadData.metadata.id;
-
-// Create conversion job. The correct field is id, not file_id.
-progressElement.style.width="25%";
-
-const jobResponse=await apiRequest(API_PREFIX+"/jobs",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-id:uploadedFileId,
-output_format:outputFormat,
-quality:"medium"
-})
-});
-
-const jobData=await readApiResponse(jobResponse);
-
-if(!jobData.id){
-throw new Error("The server did not return a job ID: "+JSON.stringify(jobData));
-}
-
-const jobId=jobData.id;
-
-// Check job status for up to 3 minutes.
-for(let attempt=1;attempt<=90;attempt++){
-
-await new Promise(resolve=>setTimeout(resolve,2000));
-
-const statusResponse=await apiRequest(
-API_PREFIX+"/jobs/"+encodeURIComponent(jobId)
-);
-
-const statusData=await readApiResponse(statusResponse);
-
-if(typeof statusData.progress==="number"){
-progressElement.style.width=
-Math.max(30,Math.min(85,30+Math.min(statusData.progress,100)*0.55))+"%";
-}
-
-if(statusData.status==="completed"){
-
-if(!statusData.output_file_id){
-throw new Error("Job completed, but output_file_id is missing.");
-}
-
-progressElement.style.width="90%";
-
-const fileResponse=await apiRequest(
-API_PREFIX+"/files/"+encodeURIComponent(statusData.output_file_id)
-);
-
-const blob=await fileResponse.blob();
-
-if(!blob||blob.size===0){
-throw new Error("The converted file is empty.");
-}
-
-const fileUrl=URL.createObjectURL(blob);
-const originalName=file.name.replace(/\.[^/.]+$/,"");
-const extension=outputFormat==="jpeg"?"jpg":outputFormat;
-
-return{
-url:fileUrl,
-filename:originalName+"."+extension
-};
-}
-
-if(statusData.status==="failed"||statusData.status==="cancelled"){
-throw new Error(
-"Conversion "+statusData.status+": "+
-(statusData.error_message||"The server did not provide more details.")
-);
-}
-}
-
-throw new Error("Conversion did not finish within 3 minutes. Please try again.");
-}
-</script>
-
-</body>
-</html>
+functi
