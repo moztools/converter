@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -65,6 +66,7 @@
         <h1 onclick="window.scrollTo(0,0)">Moz<span>Tools</span></h1>
         <div style="font-size: 24px; color: #64748b; cursor: pointer;">⋮⋮</div>
     </div>
+
     <div class="categories" id="categories">
         <div class="pill active" onclick="filterTools('all', this)">All Tools</div>
         <div class="pill" onclick="filterTools('documents', this)">Documents</div>
@@ -72,6 +74,7 @@
         <div class="pill" onclick="filterTools('images', this)">Images</div>
         <div class="pill" onclick="filterTools('media', this)">Audio & Video</div>
     </div>
+
     <div class="tool-list" id="toolList">
         <div class="tool-card image-card" onclick="openTool('compress', 'Compress Image')">
             <div class="card-icon bg-orange">🗜️</div>
@@ -110,6 +113,7 @@
             <div class="card-content"><h3>Video to MP3</h3><p>Extract the audio track from any video.</p></div>
         </div>
     </div>
+
     <div class="converter-container" id="converterContainer">
         <div class="converter-box">
             <div class="converter-header">
@@ -141,6 +145,7 @@
             </div>
         </div>
     </div>
+
     <div class="how-to-section">
         <h2>How to Convert Your Files for Free</h2>
         <p>MozTools makes it incredibly easy to convert your files online without downloading any software. Here is how it works:</p>
@@ -152,6 +157,7 @@
         </ul>
         <p>All our tools are completely free, work on mobile phones and desktop computers, and require no registration.</p>
     </div>
+
     <div class="footer">
         <a href="index.html">Home</a>
         <a href="about.html">About Us</a>
@@ -164,47 +170,76 @@
             <img src="https://api.visitorbadge.io/api/visitors?path=moztools.github.io%2Fconverter%2F&countColor=%231a73e8" alt="Visitors"/>
         </div>
     </div>
+
     <script>
-        const WORKER_URL = "https://moztools-converter.kadurizvan.workers.dev"; 
+        const WORKER_URL = "https://moztools-converter.kadurizvan.workers.dev";
+        const API_PREFIX = WORKER_URL + "/proxy/api";
+
         let selectedFile = null;
+        let currentTool = "";
+        let downloadObjectUrl = null;
 
         function filterTools(category, element) {
             document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
             element.classList.add('active');
+
             document.querySelectorAll('.tool-card').forEach(card => {
-                if (category === 'all') { card.style.display = 'flex'; }
-                else if (category === 'documents' && card.classList.contains('doc-card')) { card.style.display = 'flex'; }
-                else if (category === 'pdf' && card.classList.contains('pdf-card')) { card.style.display = 'flex'; }
-                else if (category === 'images' && card.classList.contains('image-card')) { card.style.display = 'flex'; }
-                else if (category === 'media' && card.classList.contains('media-card')) { card.style.display = 'flex'; }
-                else { card.style.display = 'none'; }
+                if (category === 'all') {
+                    card.style.display = 'flex';
+                } else if (category === 'documents' && card.classList.contains('doc-card')) {
+                    card.style.display = 'flex';
+                } else if (category === 'pdf' && card.classList.contains('pdf-card')) {
+                    card.style.display = 'flex';
+                } else if (category === 'images' && card.classList.contains('image-card')) {
+                    card.style.display = 'flex';
+                } else if (category === 'media' && card.classList.contains('media-card')) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
             });
         }
 
         function openTool(format, name) {
             selectedFile = null;
+            currentTool = format;
+
+            document.getElementById('fileInput').value = '';
             document.getElementById('fileName').innerText = '';
             document.getElementById('downloadBtn').style.display = 'none';
             document.getElementById('progressBar').style.display = 'none';
             document.getElementById('uploadIcon').innerText = "📁";
             document.getElementById('uploadText').innerText = "Tap to select a file";
             document.getElementById('uploadSub').innerText = "or drag and drop it here";
-            document.getElementById('formatSelect').value = format;
+
+            if (downloadObjectUrl) {
+                URL.revokeObjectURL(downloadObjectUrl);
+                downloadObjectUrl = null;
+            }
+
+            if (format !== 'compress') {
+                document.getElementById('formatSelect').value = format;
+            }
+
             document.getElementById('toolTitle').innerText = name;
+
             let container = document.getElementById('converterContainer');
             container.classList.add('active');
             container.scrollIntoView({ behavior: 'smooth' });
+
             resetButton();
         }
 
         function cancelConversion() {
             document.getElementById('converterContainer').classList.remove('active');
             selectedFile = null;
+            currentTool = "";
             document.getElementById('fileInput').value = '';
         }
 
         function handleFileSelection(file) {
             if (!file) return;
+
             selectedFile = file;
             document.getElementById('uploadIcon').innerText = "✅";
             document.getElementById('uploadText').innerText = "File Selected";
@@ -218,6 +253,7 @@
             btn.disabled = false;
             btn.innerText = "Convert File";
             btn.style.backgroundColor = "#1a73e8";
+
             document.getElementById('progressBar').style.display = 'none';
             document.getElementById('progress').style.width = '0%';
         }
@@ -225,135 +261,305 @@
         window.addEventListener('load', function() {
             let dropZone = document.getElementById('dropZone');
             let fileInput = document.getElementById('fileInput');
-            dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('dragover'); });
-            dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('dragover'); });
+
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', function() {
+                dropZone.classList.remove('dragover');
+            });
+
             dropZone.addEventListener('drop', function(e) {
                 e.preventDefault();
                 dropZone.classList.remove('dragover');
-                if (e.dataTransfer.files.length > 0) handleFileSelection(e.dataTransfer.files[0]);
+
+                if (e.dataTransfer.files.length > 0) {
+                    handleFileSelection(e.dataTransfer.files[0]);
+                }
             });
+
             fileInput.addEventListener('change', function() {
-                if (this.files.length > 0) handleFileSelection(this.files[0]);
+                if (this.files.length > 0) {
+                    handleFileSelection(this.files[0]);
+                }
             });
         });
 
+        async function readApiResponse(response) {
+            const contentType = response.headers.get("content-type") || "";
+
+            if (contentType.includes("application/json")) {
+                return await response.json();
+            }
+
+            const text = await response.text();
+            return { detail: text };
+        }
+
+        function getErrorMessage(data, fallback) {
+            if (data && typeof data.detail === "string") return data.detail;
+            if (data && typeof data.message === "string") return data.message;
+            if (data && typeof data.error === "string") return data.error;
+            return fallback;
+        }
+
+        async function apiRequest(url, options = {}) {
+            let response;
+
+            try {
+                response = await fetch(url, options);
+            } catch (error) {
+                throw new Error("Could not connect to the conversion server. Please try again.");
+            }
+
+            if (!response.ok) {
+                const errorData = await readApiResponse(response);
+                throw new Error(
+                    getErrorMessage(errorData, "Server error: " + response.status)
+                );
+            }
+
+            return response;
+        }
+
         async function startConversion() {
-            if (!selectedFile) { alert("Please select a file first!"); return; }
-            let targetFormat = document.getElementById('formatSelect').value;
-            let progressBar = document.getElementById('progressBar');
-            let progress = document.getElementById('progress');
-            let convertBtn = document.getElementById('convertBtn');
-            let downloadBtn = document.getElementById('downloadBtn');
+            if (!selectedFile) {
+                alert("Please select a file first!");
+                return;
+            }
+
+            const progressBar = document.getElementById('progressBar');
+            const progress = document.getElementById('progress');
+            const convertBtn = document.getElementById('convertBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+
             progressBar.style.display = 'block';
-            progress.style.width = '20%';
+            progress.style.width = '5%';
             convertBtn.disabled = true;
             convertBtn.innerText = "Processing...";
             downloadBtn.style.display = 'none';
 
             try {
-                if (targetFormat === 'compress') {
-                    const compressedUrl = await compressLocalImage(selectedFile);
-                    progress.style.width = '100%';
-                    convertBtn.innerText = "Success! ✅";
-                    convertBtn.style.backgroundColor = "#10b981";
-                    downloadBtn.href = compressedUrl;
-                    downloadBtn.download = "compressed_" + selectedFile.name.split('.')[0] + ".jpg";
-                    downloadBtn.style.display = 'block';
-                } else {
-                    const downloadUrl = await convertViaProxy(selectedFile, targetFormat, progress);
-                    progress.style.width = '100%';
-                    convertBtn.innerText = "Success! ✅";
-                    convertBtn.style.backgroundColor = "#10b981";
+                let downloadUrl;
+
+                if (currentTool === 'compress') {
+                    if (!selectedFile.type.startsWith('image/')) {
+                        throw new Error("Please select an image file.");
+                    }
+
+                    convertBtn.innerText = "Compressing Image...";
+                    downloadUrl = await compressLocalImage(selectedFile);
+
+                    downloadObjectUrl = downloadUrl;
                     downloadBtn.href = downloadUrl;
-                    downloadBtn.style.display = 'block';
+                    downloadBtn.download = "compressed_" + selectedFile.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                } else {
+                    downloadBtn.innerText = "⬇️ Download Converted File";
+                    convertBtn.innerText = "Uploading File...";
+
+                    const result = await convertViaProxy(
+                        selectedFile,
+                        currentTool,
+                        progress
+                    );
+
+                    downloadObjectUrl = result.url;
+                    downloadBtn.href = result.url;
+                    downloadBtn.download = result.filename;
                 }
+
+                progress.style.width = '100%';
+                convertBtn.innerText = "Success! ✅";
+                convertBtn.style.backgroundColor = "#10b981";
+                downloadBtn.style.display = 'block';
+
             } catch (error) {
+                console.error("MozTools conversion error:", error);
                 alert("Error: " + error.message);
                 convertBtn.innerText = "Try Again";
                 convertBtn.style.backgroundColor = "#ef4444";
+                convertBtn.disabled = false;
             } finally {
-                setTimeout(() => { resetButton(); }, 5000);
+                setTimeout(() => {
+                    if (convertBtn.innerText === "Success! ✅") {
+                        resetButton();
+                    }
+                }, 5000);
             }
         }
 
         async function compressLocalImage(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
+
                 reader.readAsDataURL(file);
+
                 reader.onload = event => {
                     const img = new Image();
                     img.src = event.target.result;
+
                     img.onload = () => {
                         try {
                             const canvas = document.createElement('canvas');
                             const ctx = canvas.getContext('2d');
+
                             let width = img.width;
                             let height = img.height;
                             const max = 1920;
-                            if (width > max) { height *= max / width; width = max; }
-                            if (height > max) { width *= max / height; height = max; }
-                            canvas.width = width;
-                            canvas.height = height;
-                            ctx.drawImage(img, 0, 0, width, height);
+
+                            if (width > max) {
+                                height *= max / width;
+                                width = max;
+                            }
+
+                            if (height > max) {
+                                width *= max / height;
+                                height = max;
+                            }
+
+                            canvas.width = Math.round(width);
+                            canvas.height = Math.round(height);
+
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
                             canvas.toBlob(blob => {
-                                if (blob) resolve(URL.createObjectURL(blob));
-                                else reject(new Error("Canvas to Blob failed"));
+                                if (blob) {
+                                    resolve(URL.createObjectURL(blob));
+                                } else {
+                                    reject(new Error("Image compression failed."));
+                                }
                             }, 'image/jpeg', 0.6);
-                        } catch (err) { reject(err); }
+
+                        } catch (err) {
+                            reject(err);
+                        }
                     };
-                    img.onerror = () => reject(new Error("Image load failed"));
+
+                    img.onerror = () => reject(new Error("Image could not be opened."));
                 };
-                reader.onerror = () => reject(new Error("File read failed"));
+
+                reader.onerror = () => reject(new Error("File could not be read."));
             });
         }
 
         async function convertViaProxy(file, format, progressElement) {
-            progressElement.style.width = '30%';
-            
-            // 1. Create job via Cloudflare Proxy
-            const jobRes = await fetch(WORKER_URL + "/proxy/api/v2/jobs", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    tasks: {
-                        "import-file": { operation: "import/upload" },
-                        "convert-file": { operation: "convert", input: "import-file", output_format: format },
-                        "export-file": { operation: "export/url", input: "convert-file" }
-                    }
-                })
-            });
+            // Transmute uses "jpeg" as the standard JPG output format.
+            const outputFormat = format === "jpg" ? "jpeg" : format;
 
-            const jobData = await jobRes.json();
-            if (!jobData || !jobData.data) throw new Error("Render server is waking up. Please try again in 60 seconds.");
+            // STEP 1: Upload the original file to Transmute.
+            progressElement.style.width = '10%';
 
-            progressElement.style.width = '50%';
-            const uploadTask = jobData.data.tasks.find(t => t.name === "import-file");
-            
-            // 2. Upload file directly to Transmute's upload URL (bypasses proxy for speed)
             const formData = new FormData();
-            formData.append('file', file);
-            if (uploadTask.result.form.parameters) {
-                for (const key in uploadTask.result.form.parameters) {
-                    formData.append(key, uploadTask.result.form.parameters[key]);
+            formData.append("file", file);
+
+            const uploadResponse = await apiRequest(
+                API_PREFIX + "/files",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+            const uploadData = await readApiResponse(uploadResponse);
+
+            if (!uploadData.metadata || !uploadData.metadata.id) {
+                throw new Error("The server did not return the uploaded file ID.");
+            }
+
+            const uploadedFileId = uploadData.metadata.id;
+
+            // STEP 2: Submit a conversion job.
+            progressElement.style.width = '25%';
+
+            const jobResponse = await apiRequest(
+                API_PREFIX + "/jobs",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        id: uploadedFileId,
+                        output_format: outputFormat
+                    })
+                }
+            );
+
+            const jobData = await readApiResponse(jobResponse);
+
+            if (!jobData.id) {
+                throw new Error("The server did not return a conversion job ID.");
+            }
+
+            const jobId = jobData.id;
+
+            // STEP 3: Check the job until it finishes.
+            let attempts = 0;
+            const maxAttempts = 180;
+
+            while (attempts < maxAttempts) {
+                attempts++;
+
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                const statusResponse = await apiRequest(
+                    API_PREFIX + "/jobs/" + encodeURIComponent(jobId)
+                );
+
+                const statusData = await readApiResponse(statusResponse);
+
+                if (typeof statusData.progress === "number") {
+                    const serverProgress = Math.min(statusData.progress, 100);
+                    progressElement.style.width =
+                        Math.max(30, Math.min(85, 30 + serverProgress * 0.55)) + "%";
+                } else {
+                    progressElement.style.width =
+                        Math.min(85, 30 + attempts * 2) + "%";
+                }
+
+                if (statusData.status === "completed") {
+                    if (!statusData.output_file_id) {
+                        throw new Error("Conversion completed, but no output file was returned.");
+                    }
+
+                    // STEP 4: Download the converted file through the Worker.
+                    progressElement.style.width = '90%';
+
+                    const fileResponse = await apiRequest(
+                        API_PREFIX + "/files/" +
+                        encodeURIComponent(statusData.output_file_id)
+                    );
+
+                    const blob = await fileResponse.blob();
+
+                    if (!blob || blob.size === 0) {
+                        throw new Error("The converted file is empty.");
+                    }
+
+                    const fileUrl = URL.createObjectURL(blob);
+
+                    const originalName = file.name.replace(/\.[^/.]+$/, "");
+                    const extension = outputFormat === "jpeg" ? "jpg" : outputFormat;
+
+                    return {
+                        url: fileUrl,
+                        filename: originalName + "." + extension
+                    };
+                }
+
+                if (
+                    statusData.status === "failed" ||
+                    statusData.status === "cancelled"
+                ) {
+                    throw new Error(
+                        statusData.error_message || "The server could not convert this file."
+                    );
                 }
             }
-            await fetch(uploadTask.result.form.url, { method: 'POST', body: formData });
 
-            progressElement.style.width = '75%';
-
-            // 3. Check status via Proxy
-            while (true) {
-                const statusRes = await fetch(`${WORKER_URL}/proxy/api/v2/jobs/${jobData.data.id}`);
-                const statusData = await statusRes.json();
-                
-                if (statusData.data.status === 'finished') {
-                    const exportTask = statusData.data.tasks.find(t => t.name === "export-file");
-                    return exportTask.result.files[0].url;
-                } else if (statusData.data.status === 'error') {
-                    throw new Error("Conversion failed on the server.");
-                }
-                await new Promise(r => setTimeout(r, 2000));
-            }
+            throw new Error("Conversion is taking too long. Please try again.");
         }
     </script>
 </body>
