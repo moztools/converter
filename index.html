@@ -47,14 +47,17 @@ button,input,textarea,select{font:inherit}
 .tool-panel{display:none;max-width:650px;margin:10px auto 40px;padding:0 15px}
 .tool-panel.active{display:block}
 .panel-box{background:white;border:1px solid #e3e8ef;border-radius:16px;padding:24px;box-shadow:0 5px 20px #00000009}
-.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.panel-head h2{font-size:21px;margin:0}
-.close-btn{border:0;background:#f1f5f9;border-radius:8px;padding:8px 12px;cursor:pointer;color:#475569}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.panel-head h2{font-size:21px;margin:0;flex:1}
+.close-btn,.reset-btn{border:0;border-radius:8px;padding:9px 12px;cursor:pointer;font-size:13px;font-weight:700}
+.close-btn{background:#f1f5f9;color:#475569}
+.reset-btn{background:#e3efff;color:#1261b8}
 .field{margin:15px 0}
 .field label{display:block;font-size:13px;font-weight:700;margin-bottom:7px;color:#334155}
 .field input,.field textarea,.field select{display:block;width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:12px;background:white;outline:none;color:#172033}
 .field input:focus,.field textarea:focus,.field select:focus{border-color:#1674e8}
 .primary{background:#1674e8;color:white;border:0;border-radius:9px;padding:13px 18px;font-weight:700;cursor:pointer;width:100%;margin-top:10px}
+.primary:disabled{opacity:.6;cursor:not-allowed}
 .secondary{background:#eef2f7;color:#334155;border:0;border-radius:9px;padding:12px 16px;font-weight:700;cursor:pointer}
 .result{margin-top:17px;padding:15px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;color:#164e91;display:none;line-height:1.6;overflow-wrap:anywhere}
 .result.show{display:block}
@@ -218,9 +221,9 @@ button,input,textarea,select{font:inherit}
 <div class="panel-box">
 <div class="panel-head">
 <h2 id="panelTitle">Tool</h2>
+<button class="reset-btn" onclick="resetTool()">↻ Start Again</button>
 <button class="close-btn" onclick="closeTool()">✕ Close</button>
 </div>
-
 <div id="toolContent"></div>
 <div class="status" id="statusMessage"></div>
 </div>
@@ -254,8 +257,9 @@ const API_PREFIX=WORKER_URL+"/proxy/api";
 
 let selectedFile=null;
 let currentTool="";
+let currentTitle="";
 let downloadObjectUrl=null;
-let qrInstance=null;
+let previewObjectUrl=null;
 
 function goHome(){
 closeTool();
@@ -265,7 +269,6 @@ window.scrollTo({top:0,behavior:"smooth"});
 function filterTools(category,button){
 document.querySelectorAll(".pill").forEach(p=>p.classList.remove("active"));
 button.classList.add("active");
-
 document.querySelectorAll(".tool-card").forEach(card=>{
 card.style.display=(category==="all"||card.dataset.category===category)?"flex":"none";
 });
@@ -296,20 +299,38 @@ box.textContent="";
 box.className="status";
 }
 
-function closeTool(){
-document.getElementById("toolPanel").classList.remove("active");
-selectedFile=null;
-currentTool="";
+function clearDownloads(){
 if(downloadObjectUrl){
 URL.revokeObjectURL(downloadObjectUrl);
 downloadObjectUrl=null;
 }
+if(previewObjectUrl){
+URL.revokeObjectURL(previewObjectUrl);
+previewObjectUrl=null;
+}
+}
+
+function closeTool(){
+document.getElementById("toolPanel").classList.remove("active");
+clearDownloads();
+selectedFile=null;
+currentTool="";
+currentTitle="";
+}
+
+function resetTool(){
+if(!currentTool)return;
+const tool=currentTool;
+const title=currentTitle;
+openTool(tool,title);
 }
 
 function openTool(tool,title){
 closeTool();
 currentTool=tool;
+currentTitle=title;
 clearStatus();
+
 document.getElementById("panelTitle").textContent=title;
 const content=document.getElementById("toolContent");
 
@@ -327,12 +348,14 @@ content.innerHTML=`
 <button class="primary" onclick="processImage()">Process Image</button>
 <a id="localDownload" class="download" href="#" download>⬇ Download Image</a>
 <div class="small-note">Image processing happens in your browser. Your image is not uploaded to our conversion server.</div>`;
+
 if(tool==="resize"){
 document.getElementById("imageOptions").innerHTML=`
 <div class="field"><label>Width (pixels)</label><input id="imageWidth" type="number" min="1" placeholder="Example: 800"></div>
 <div class="field"><label>Height (pixels)</label><input id="imageHeight" type="number" min="1" placeholder="Example: 600"></div>
 <label><input id="keepRatio" type="checkbox" checked> Keep original proportions</label>`;
 }
+
 }else if(tool==="qr"){
 content.innerHTML=`
 <div class="field"><label>Enter text or website URL</label><textarea id="qrText" rows="3" placeholder="https://example.com"></textarea></div>
@@ -340,11 +363,13 @@ content.innerHTML=`
 <button class="primary" onclick="generateQR()">Generate QR Code</button>
 <div class="qr-area"><div id="qrcode"></div></div>
 <a id="qrDownload" class="download" download="moztools-qr.png">⬇ Download QR Code</a>`;
+
 }else if(tool==="age"){
 content.innerHTML=`
 <div class="field"><label>Your date of birth</label><input type="date" id="birthDate"></div>
 <button class="primary" onclick="calculateAge()">Calculate Age</button>
 <div class="result" id="ageResult"></div>`;
+
 }else if(tool==="bmi"){
 content.innerHTML=`
 <div class="field"><label>Weight (kg)</label><input type="number" id="weight" min="1" placeholder="Example: 75"></div>
@@ -352,22 +377,26 @@ content.innerHTML=`
 <button class="primary" onclick="calculateBMI()">Calculate BMI</button>
 <div class="result" id="bmiResult"></div>
 <p class="small-note">BMI is a general screening measure, not a medical diagnosis.</p>`;
+
 }else if(tool==="percentage"){
 content.innerHTML=`
 <div class="field"><label>What is the percentage?</label><input type="number" id="percentValue" placeholder="Example: 20"></div>
 <div class="field"><label>Of this number</label><input type="number" id="percentTotal" placeholder="Example: 500"></div>
 <button class="primary" onclick="calculatePercentage()">Calculate</button>
 <div class="result" id="percentageResult"></div>`;
+
 }else if(tool==="discount"){
 content.innerHTML=`
 <div class="field"><label>Original price</label><input type="number" id="originalPrice" min="0" placeholder="Example: 1000"></div>
 <div class="field"><label>Discount (%)</label><input type="number" id="discountPercent" min="0" max="100" placeholder="Example: 15"></div>
 <button class="primary" onclick="calculateDiscount()">Calculate Discount</button>
 <div class="result" id="discountResult"></div>`;
+
 }else if(tool==="word"){
 content.innerHTML=`
 <div class="field"><label>Enter or paste your text</label><textarea id="wordText" rows="7" placeholder="Start typing here..." oninput="countWords()"></textarea></div>
 <div class="result show" id="wordResult">Words: 0 | Characters: 0 | Sentences: 0</div>`;
+
 }else{
 content.innerHTML=`
 <div class="upload-box" onclick="document.getElementById('serverFile').click()">
@@ -426,14 +455,18 @@ showResult("bmiResult","Your BMI: <strong>"+bmi.toFixed(1)+"</strong><br>Categor
 function calculatePercentage(){
 const p=Number(document.getElementById("percentValue").value);
 const total=Number(document.getElementById("percentTotal").value);
-if(!document.getElementById("percentValue").value||!document.getElementById("percentTotal").value){setStatus("Please fill in both numbers.","error");return;}
+if(!document.getElementById("percentValue").value||!document.getElementById("percentTotal").value){
+setStatus("Please fill in both numbers.","error");return;
+}
 showResult("percentageResult",p+"% of "+total+" = <strong>"+(p/100*total).toLocaleString(undefined,{maximumFractionDigits:4})+"</strong>");
 }
 
 function calculateDiscount(){
 const price=Number(document.getElementById("originalPrice").value);
 const discount=Number(document.getElementById("discountPercent").value);
-if(price<0||discount<0||discount>100||!document.getElementById("originalPrice").value||!document.getElementById("discountPercent").value){setStatus("Enter a valid price and discount between 0 and 100%.","error");return;}
+if(price<0||discount<0||discount>100||!document.getElementById("originalPrice").value||!document.getElementById("discountPercent").value){
+setStatus("Enter a valid price and discount between 0 and 100%.","error");return;
+}
 const saved=price*discount/100;
 showResult("discountResult","You save: <strong>"+saved.toFixed(2)+"</strong><br>Final price: <strong>"+(price-saved).toFixed(2)+"</strong>");
 }
@@ -452,11 +485,12 @@ if(typeof QRCode==="undefined"){setStatus("QR generator library could not load. 
 const size=Number(document.getElementById("qrSize").value);
 const area=document.getElementById("qrcode");
 area.innerHTML="";
+const link=document.getElementById("qrDownload");
+link.style.display="none";
 new QRCode(area,{text:text,width:size,height:size,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.H});
 setTimeout(()=>{
 const canvas=area.querySelector("canvas");
 const img=area.querySelector("img");
-const link=document.getElementById("qrDownload");
 if(canvas){
 link.href=canvas.toDataURL("image/png");
 link.style.display="block";
@@ -465,15 +499,27 @@ link.href=img.src;
 link.style.display="block";
 }
 },300);
+clearStatus();
 }
 
 function selectImage(input){
 if(!input.files.length)return;
 selectedFile=input.files[0];
-if(!selectedFile.type.startsWith("image/")){setStatus("Please select a valid image.","error");return;}
+if(!selectedFile.type.startsWith("image/")){
+setStatus("Please select a valid image.","error");
+input.value="";
+selectedFile=null;
+return;
+}
+const link=document.getElementById("localDownload");
+link.style.display="none";
+link.removeAttribute("href");
+clearDownloads();
+
 document.getElementById("imageInfo").textContent=selectedFile.name+" ("+(selectedFile.size/1024).toFixed(1)+" KB)";
 const preview=document.getElementById("imagePreview");
-preview.src=URL.createObjectURL(selectedFile);
+previewObjectUrl=URL.createObjectURL(selectedFile);
+preview.src=previewObjectUrl;
 preview.style.display="block";
 clearStatus();
 }
@@ -504,7 +550,7 @@ if(height>max){width=width*max/height;height=max;}
 canvas.width=Math.round(width);
 canvas.height=Math.round(height);
 const ctx=canvas.getContext("2d");
-if(currentTool==="jpg"||currentTool==="compress") {
+if(currentTool==="jpg"||currentTool==="compress"){
 ctx.fillStyle="#ffffff";
 ctx.fillRect(0,0,canvas.width,canvas.height);
 }
@@ -526,7 +572,7 @@ const link=document.getElementById("localDownload");
 link.href=downloadObjectUrl;
 link.download="moztools-"+selectedFile.name.replace(/\.[^/.]+$/,"")+"."+extension;
 link.style.display="block";
-setStatus("Your image is ready. Select Download Image to save it.","success");
+setStatus("Your image is ready. Select Download Image to save it. Use Start Again to process another image.","success");
 },mime,quality);
 };
 img.onerror=()=>setStatus("Could not open this image.","error");
@@ -538,7 +584,16 @@ reader.readAsDataURL(selectedFile);
 function selectServerFile(input){
 if(!input.files.length)return;
 selectedFile=input.files[0];
+const download=document.getElementById("serverDownload");
+download.style.display="none";
+download.removeAttribute("href");
+if(downloadObjectUrl){
+URL.revokeObjectURL(downloadObjectUrl);
+downloadObjectUrl=null;
+}
 document.getElementById("serverFileInfo").textContent=selectedFile.name+" ("+(selectedFile.size/1024).toFixed(1)+" KB)";
+document.getElementById("progressBar").style.display="none";
+document.getElementById("progress").style.width="0";
 clearStatus();
 }
 
@@ -614,7 +669,7 @@ download.href=downloadObjectUrl;
 download.download=selectedFile.name.replace(/\.[^/.]+$/,"")+"."+ext;
 download.style.display="block";
 progress.style.width="100%";
-setStatus("Conversion successful! Your file is ready to download.","success");
+setStatus("Conversion successful! Your file is ready to download. Use Start Again to convert another file.","success");
 completed=true;
 break;
 }
@@ -627,12 +682,6 @@ setStatus(error.message,"error");
 btn.disabled=false;
 btn.textContent="Convert File";
 }
-}
-
-function clearStatus(){
-const box=document.getElementById("statusMessage");
-box.textContent="";
-box.className="status";
 }
 </script>
 
