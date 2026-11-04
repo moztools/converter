@@ -1,4 +1,3 @@
-HTML
 
 <!DOCTYPE html>
 <html lang="en">
@@ -394,4 +393,248 @@ el.innerHTML=message;
 el.classList.add("show");
 }
 
-f
+function calculateAge(){
+const value=document.getElementById("birthDate").value;
+if(!value){setStatus("Please enter your date of birth.","error");return;}
+const birth=new Date(value+"T00:00:00");
+const today=new Date();
+if(birth>today){setStatus("Date of birth cannot be in the future.","error");return;}
+let years=today.getFullYear()-birth.getFullYear();
+let months=today.getMonth()-birth.getMonth();
+let days=today.getDate()-birth.getDate();
+if(days<0){
+months--;
+days+=new Date(today.getFullYear(),today.getMonth(),0).getDate();
+}
+if(months<0){years--;months+=12;}
+showResult("ageResult","Your age is <strong>"+years+" years, "+months+" months and "+days+" days.</strong>");
+}
+
+function calculateBMI(){
+const weight=Number(document.getElementById("weight").value);
+const height=Number(document.getElementById("height").value);
+if(weight<=0||height<=0){setStatus("Enter a valid weight and height.","error");return;}
+const bmi=weight/Math.pow(height/100,2);
+let category="";
+if(bmi<18.5)category="Underweight";
+else if(bmi<25)category="Normal weight";
+else if(bmi<30)category="Overweight";
+else category="Obesity range";
+showResult("bmiResult","Your BMI: <strong>"+bmi.toFixed(1)+"</strong><br>Category: <strong>"+category+"</strong>");
+}
+
+function calculatePercentage(){
+const p=Number(document.getElementById("percentValue").value);
+const total=Number(document.getElementById("percentTotal").value);
+if(!document.getElementById("percentValue").value||!document.getElementById("percentTotal").value){setStatus("Please fill in both numbers.","error");return;}
+showResult("percentageResult",p+"% of "+total+" = <strong>"+(p/100*total).toLocaleString(undefined,{maximumFractionDigits:4})+"</strong>");
+}
+
+function calculateDiscount(){
+const price=Number(document.getElementById("originalPrice").value);
+const discount=Number(document.getElementById("discountPercent").value);
+if(price<0||discount<0||discount>100||!document.getElementById("originalPrice").value||!document.getElementById("discountPercent").value){setStatus("Enter a valid price and discount between 0 and 100%.","error");return;}
+const saved=price*discount/100;
+showResult("discountResult","You save: <strong>"+saved.toFixed(2)+"</strong><br>Final price: <strong>"+(price-saved).toFixed(2)+"</strong>");
+}
+
+function countWords(){
+const text=document.getElementById("wordText").value;
+const words=text.trim()?text.trim().split(/\s+/).length:0;
+const sentences=text.trim()?text.split(/[.!?]+/).filter(s=>s.trim()).length:0;
+document.getElementById("wordResult").innerHTML="Words: <strong>"+words+"</strong> | Characters: <strong>"+text.length+"</strong> | Characters without spaces: <strong>"+text.replace(/\s/g,"").length+"</strong> | Sentences: <strong>"+sentences+"</strong>";
+}
+
+function generateQR(){
+const text=document.getElementById("qrText").value.trim();
+if(!text){setStatus("Please enter text or a website URL.","error");return;}
+if(typeof QRCode==="undefined"){setStatus("QR generator library could not load. Check your internet connection.","error");return;}
+const size=Number(document.getElementById("qrSize").value);
+const area=document.getElementById("qrcode");
+area.innerHTML="";
+new QRCode(area,{text:text,width:size,height:size,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.H});
+setTimeout(()=>{
+const canvas=area.querySelector("canvas");
+const img=area.querySelector("img");
+const link=document.getElementById("qrDownload");
+if(canvas){
+link.href=canvas.toDataURL("image/png");
+link.style.display="block";
+}else if(img){
+link.href=img.src;
+link.style.display="block";
+}
+},300);
+}
+
+function selectImage(input){
+if(!input.files.length)return;
+selectedFile=input.files[0];
+if(!selectedFile.type.startsWith("image/")){setStatus("Please select a valid image.","error");return;}
+document.getElementById("imageInfo").textContent=selectedFile.name+" ("+(selectedFile.size/1024).toFixed(1)+" KB)";
+const preview=document.getElementById("imagePreview");
+preview.src=URL.createObjectURL(selectedFile);
+preview.style.display="block";
+clearStatus();
+}
+
+function processImage(){
+if(!selectedFile){setStatus("Please select an image first.","error");return;}
+const img=new Image();
+const reader=new FileReader();
+reader.onload=e=>{
+img.onload=()=>{
+let width=img.width;
+let height=img.height;
+const canvas=document.createElement("canvas");
+if(currentTool==="resize"){
+const w=Number(document.getElementById("imageWidth").value);
+const h=Number(document.getElementById("imageHeight").value);
+if(w<=0||h<=0){setStatus("Please enter a valid width and height.","error");return;}
+if(document.getElementById("keepRatio").checked){
+const ratio=Math.min(w/img.width,h/img.height);
+width=Math.round(img.width*ratio);
+height=Math.round(img.height*ratio);
+}else{width=w;height=h;}
+}else if(currentTool==="compress"){
+const max=1920;
+if(width>max){height=height*max/width;width=max;}
+if(height>max){width=width*max/height;height=max;}
+}
+canvas.width=Math.round(width);
+canvas.height=Math.round(height);
+const ctx=canvas.getContext("2d");
+if(currentTool==="jpg"||currentTool==="compress") {
+ctx.fillStyle="#ffffff";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+}
+ctx.drawImage(img,0,0,canvas.width,canvas.height);
+let mime="image/jpeg";
+let extension="jpg";
+let quality=0.75;
+if(currentTool==="png"){mime="image/png";extension="png";quality=1;}
+if(currentTool==="compress"){mime="image/jpeg";extension="jpg";quality=0.65;}
+if(currentTool==="resize"){
+mime=selectedFile.type==="image/png"?"image/png":"image/jpeg";
+extension=mime==="image/png"?"png":"jpg";
+}
+canvas.toBlob(blob=>{
+if(!blob){setStatus("Image processing failed.","error");return;}
+if(downloadObjectUrl)URL.revokeObjectURL(downloadObjectUrl);
+downloadObjectUrl=URL.createObjectURL(blob);
+const link=document.getElementById("localDownload");
+link.href=downloadObjectUrl;
+link.download="moztools-"+selectedFile.name.replace(/\.[^/.]+$/,"")+"."+extension;
+link.style.display="block";
+setStatus("Your image is ready. Select Download Image to save it.","success");
+},mime,quality);
+};
+img.onerror=()=>setStatus("Could not open this image.","error");
+img.src=e.target.result;
+};
+reader.readAsDataURL(selectedFile);
+}
+
+function selectServerFile(input){
+if(!input.files.length)return;
+selectedFile=input.files[0];
+document.getElementById("serverFileInfo").textContent=selectedFile.name+" ("+(selectedFile.size/1024).toFixed(1)+" KB)";
+clearStatus();
+}
+
+async function readApiResponse(response){
+const type=response.headers.get("content-type")||"";
+if(type.includes("application/json"))return await response.json();
+return {detail:await response.text()};
+}
+
+function apiError(data){
+if(data&&typeof data.detail==="string")return data.detail;
+if(data&&data.detail)return JSON.stringify(data.detail);
+if(data&&data.message)return data.message;
+if(data&&data.error)return data.error;
+return "Server error";
+}
+
+async function apiRequest(url,options={}){
+let response;
+try{response=await fetch(url,options);}
+catch(e){throw new Error("Could not connect to the conversion server. Please try again.");}
+if(!response.ok){
+const data=await readApiResponse(response);
+throw new Error("HTTP "+response.status+": "+apiError(data));
+}
+return response;
+}
+
+async function startServerConversion(){
+if(!selectedFile){setStatus("Please select a file first.","error");return;}
+const btn=document.getElementById("serverButton");
+const bar=document.getElementById("progressBar");
+const progress=document.getElementById("progress");
+const download=document.getElementById("serverDownload");
+btn.disabled=true;
+btn.textContent="Processing...";
+bar.style.display="block";
+progress.style.width="5%";
+download.style.display="none";
+clearStatus();
+try{
+const format=currentTool==="jpg"?"jpeg":currentTool;
+const form=new FormData();
+form.append("file",selectedFile);
+progress.style.width="15%";
+const upload=await apiRequest(API_PREFIX+"/files",{method:"POST",body:form});
+const uploadData=await readApiResponse(upload);
+if(!uploadData.metadata||!uploadData.metadata.id)throw new Error("Upload response did not contain metadata.id.");
+progress.style.width="25%";
+const job=await apiRequest(API_PREFIX+"/jobs",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({id:uploadData.metadata.id,output_format:format,quality:"medium"})
+});
+const jobData=await readApiResponse(job);
+if(!jobData.id)throw new Error("The server did not return a job ID.");
+let completed=false;
+for(let i=0;i<90;i++){
+await new Promise(resolve=>setTimeout(resolve,2000));
+const status=await apiRequest(API_PREFIX+"/jobs/"+encodeURIComponent(jobData.id));
+const data=await readApiResponse(status);
+if(typeof data.progress==="number")progress.style.width=Math.max(30,Math.min(85,30+data.progress*.55))+"%";
+if(data.status==="failed"||data.status==="cancelled")throw new Error(data.error_message||"Conversion failed.");
+if(data.status==="completed"){
+if(!data.output_file_id)throw new Error("Output file ID is missing.");
+const file=await apiRequest(API_PREFIX+"/files/"+encodeURIComponent(data.output_file_id));
+const blob=await file.blob();
+if(!blob.size)throw new Error("The converted file is empty.");
+if(downloadObjectUrl)URL.revokeObjectURL(downloadObjectUrl);
+downloadObjectUrl=URL.createObjectURL(blob);
+const ext=format==="jpeg"?"jpg":format;
+download.href=downloadObjectUrl;
+download.download=selectedFile.name.replace(/\.[^/.]+$/,"")+"."+ext;
+download.style.display="block";
+progress.style.width="100%";
+setStatus("Conversion successful! Your file is ready to download.","success");
+completed=true;
+break;
+}
+}
+if(!completed)throw new Error("Conversion did not finish within 3 minutes.");
+}catch(error){
+console.error("MozTools conversion error:",error);
+setStatus(error.message,"error");
+}finally{
+btn.disabled=false;
+btn.textContent="Convert File";
+}
+}
+
+function clearStatus(){
+const box=document.getElementById("statusMessage");
+box.textContent="";
+box.className="status";
+}
+</script>
+
+</body>
+</html>
