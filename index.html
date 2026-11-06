@@ -140,7 +140,7 @@ Start Again
 </a>
 
 <p class="note">
-Your file is processed by our conversion service. Available formats depend on the file type and the converters supported by the server.
+MozTools currently supports <strong>DOCX → PDF</strong> (unlimited) and <strong>PDF → DOCX</strong> (up to 2 pages / 3 MB on the free plan). More formats are coming soon. Your file is processed by our own conversion engine.
 </p>
 
 </section>
@@ -188,8 +188,16 @@ Your file is processed by our conversion service. Available formats depend on th
 </footer>
 
 <script>
-const WORKER_URL = "https://moztools-converter.kadurizvan.workers.dev";
-const API_PREFIX = WORKER_URL + "/proxy/api";
+const ENGINE_URL = "https://moztools-own-engine.onrender.com";
+const CONVERT_ENDPOINT = ENGINE_URL + "/convert";
+
+// What the engine actually supports, based on real tests.
+// PDF -> DOCX : pdf2docx, up to 2 pages / 3 MB (free plan limit)
+// DOCX -> PDF : LibreOffice, no page limit
+const SUPPORTED = {
+  "pdf":  [{value:"docx", label:"Word Document (DOCX)"}],
+  "docx": [{value:"pdf",  label:"PDF"}]
+};
 
 let selectedFile = null;
 let downloadObjectUrl = null;
@@ -208,347 +216,240 @@ const progressLabel = document.getElementById("progressLabel");
 const statusMessage = document.getElementById("statusMessage");
 const downloadButton = document.getElementById("downloadButton");
 
-const pdfFormats = [
-["avif","AVIF"],
-["azw3","AZW3"],
-["bmp","BMP"],
-["cbz","CBZ"],
-["dib","DIB"],
-["docx","Word Document (DOCX)"],
-["emf","EMF"],
-["eps","EPS"],
-["epub","EPUB"],
-["fb2","FB2"],
-["gif","GIF"],
-["html","HTML"],
-["ico","ICO"],
-["jp2","JP2"],
-["jpeg","JPEG"],
-["jxl","JXL"],
-["kepub","KEPUB"],
-["lrf","LRF"],
-["md","Markdown (MD)"],
-["mobi","MOBI"],
-["odg","ODG"],
-["pdm","PDM"],
-["pdv","PDV"],
-["pdb","PDB"],
-["pdfa","PDF/A"],
-["pgm","PGM"],
-["png","PNG"],
-["pnm","PNM"],
-["ppm","PPM"],
-["sgi","SGI"],
-["snr","SNR"],
-["svg","SVG"],
-["svgz","SVGZ"],
-["tex","TEX"],
-["tga","TGA"],
-["tiff","TIFF"],
-["txt","Text (TXT)"],
-["webp","WEBP"],
-["wmf","WMF"]
-];
-
-function showStatus(message,type){
-statusMessage.textContent = message;
-statusMessage.className = "status " + type;
+function showStatus(message, type){
+  statusMessage.textContent = message;
+  statusMessage.className = "status " + type;
 }
 
 function clearStatus(){
-statusMessage.textContent = "";
-statusMessage.className = "status";
+  statusMessage.textContent = "";
+  statusMessage.className = "status";
 }
 
 function clearDownload(){
-if(downloadObjectUrl){
-URL.revokeObjectURL(downloadObjectUrl);
-downloadObjectUrl = null;
-}
-downloadButton.style.display = "none";
-downloadButton.removeAttribute("href");
+  if(downloadObjectUrl){
+    URL.revokeObjectURL(downloadObjectUrl);
+    downloadObjectUrl = null;
+  }
+  downloadButton.style.display = "none";
+  downloadButton.removeAttribute("href");
 }
 
 function formatBytes(bytes){
-if(bytes < 1024) return bytes + " bytes";
-if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + " KB";
-return (bytes/(1024*1024)).toFixed(2) + " MB";
+  if(bytes < 1024) return bytes + " bytes";
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + " KB";
+  return (bytes/(1024*1024)).toFixed(2) + " MB";
 }
 
 function getExtension(name){
-const parts = name.toLowerCase().split(".");
-return parts.length > 1 ? parts.pop() : "";
+  const parts = name.toLowerCase().split(".");
+  return parts.length > 1 ? parts.pop() : "";
 }
 
-function addFormat(value,label){
-const option = document.createElement("option");
-option.value = value;
-option.textContent = label;
-formatSelect.appendChild(option);
+function addFormat(value, label){
+  const option = document.createElement("option");
+  option.value = value;
+  option.textContent = label;
+  formatSelect.appendChild(option);
 }
 
 function loadFormats(file){
-formatSelect.innerHTML = '<option value="">Choose output format</option>';
+  formatSelect.innerHTML = '<option value="">Choose output format</option>';
 
-const ext = getExtension(file.name);
+  const ext = getExtension(file.name);
+  const outputs = SUPPORTED[ext];
 
-if(ext === "pdf"){
-pdfFormats.forEach(item=>{
-if(item[0] !== "xlsx" && item[0] !== "xls"){
-addFormat(item[0],item[1]);
-}
-});
-}else if(["docx","doc","odt","rtf","txt"].includes(ext)){
-addFormat("pdf","PDF");
-}else if(["xlsx","xls","ods","csv"].includes(ext)){
-addFormat("pdf","PDF");
-}else if(["pptx","ppt","odp"].includes(ext)){
-addFormat("pdf","PDF");
-}else if(["jpg","jpeg","png","webp","bmp","gif","tiff","tif"].includes(ext)){
-["png","jpeg","webp","bmp","gif","tiff","pdf"].forEach(format=>{
-if(format !== ext){
-addFormat(format,format.toUpperCase());
-}
-});
-}else{
-showStatus("This file type does not have a confirmed format list in MozTools yet. Please choose a PDF, document, spreadsheet, presentation or image file.","error");
-formatArea.style.display = "none";
-convertButton.disabled = true;
-return;
-}
+  if(!outputs){
+    showStatus(
+      "This file type is not yet supported. MozTools currently converts PDF → DOCX and DOCX → PDF only. More formats are coming soon.",
+      "error"
+    );
+    formatArea.style.display = "none";
+    convertButton.disabled = true;
+    return;
+  }
 
-formatArea.style.display = "block";
-convertButton.disabled = false;
+  outputs.forEach(item => addFormat(item.value, item.label));
+
+  if(ext === "pdf"){
+    const hint = document.createElement("option");
+    hint.disabled = true;
+    hint.value = "";
+    hint.textContent = "Free plan: PDF → DOCX up to 2 pages / 3 MB";
+    formatSelect.appendChild(hint);
+  }
+
+  formatArea.style.display = "block";
+  convertButton.disabled = false;
 }
 
 function selectFile(file){
-if(!file) return;
+  if(!file) return;
 
-selectedFile = file;
-clearStatus();
-clearDownload();
+  selectedFile = file;
+  clearStatus();
+  clearDownload();
 
-fileName.textContent = file.name;
-fileSize.textContent = formatBytes(file.size);
-fileDetails.style.display = "flex";
+  fileName.textContent = file.name;
+  fileSize.textContent = formatBytes(file.size);
+  fileDetails.style.display = "flex";
 
-progressArea.style.display = "none";
-progressFill.style.width = "0%";
+  progressArea.style.display = "none";
+  progressFill.style.width = "0%";
 
-loadFormats(file);
+  loadFormats(file);
 }
 
-dropZone.addEventListener("click",()=>fileInput.click());
+dropZone.addEventListener("click", () => fileInput.click());
 
-fileInput.addEventListener("change",()=>{
-if(fileInput.files.length){
-selectFile(fileInput.files[0]);
-}
+fileInput.addEventListener("change", () => {
+  if(fileInput.files.length){
+    selectFile(fileInput.files[0]);
+  }
 });
 
-dropZone.addEventListener("dragover",event=>{
-event.preventDefault();
-dropZone.classList.add("dragover");
+dropZone.addEventListener("dragover", event => {
+  event.preventDefault();
+  dropZone.classList.add("dragover");
 });
 
-dropZone.addEventListener("dragleave",()=>{
-dropZone.classList.remove("dragover");
+dropZone.addEventListener("dragleave", () => {
+  dropZone.classList.remove("dragover");
 });
 
-dropZone.addEventListener("drop",event=>{
-event.preventDefault();
-dropZone.classList.remove("dragover");
-if(event.dataTransfer.files.length){
-selectFile(event.dataTransfer.files[0]);
-}
+dropZone.addEventListener("drop", event => {
+  event.preventDefault();
+  dropZone.classList.remove("dragover");
+  if(event.dataTransfer.files.length){
+    selectFile(event.dataTransfer.files[0]);
+  }
 });
 
-document.getElementById("removeFile").addEventListener("click",resetConverter);
-document.getElementById("resetButton").addEventListener("click",resetConverter);
+document.getElementById("removeFile").addEventListener("click", resetConverter);
+document.getElementById("resetButton").addEventListener("click", resetConverter);
 
 function resetConverter(){
-selectedFile = null;
-fileInput.value = "";
-fileDetails.style.display = "none";
-formatArea.style.display = "none";
-formatSelect.innerHTML = '<option value="">Choose output format</option>';
-convertButton.disabled = true;
-progressArea.style.display = "none";
-progressFill.style.width = "0%";
-clearStatus();
-clearDownload();
+  selectedFile = null;
+  fileInput.value = "";
+  fileDetails.style.display = "none";
+  formatArea.style.display = "none";
+  formatSelect.innerHTML = '<option value="">Choose output format</option>';
+  convertButton.disabled = true;
+  progressArea.style.display = "none";
+  progressFill.style.width = "0%";
+  clearStatus();
+  clearDownload();
 }
 
-async function readApiResponse(response){
-const type = response.headers.get("content-type") || "";
-if(type.includes("application/json")){
-return await response.json();
-}
-return {detail:await response.text()};
-}
-
-function apiError(data){
-if(data && typeof data.detail === "string") return data.detail;
-if(data && data.detail) return JSON.stringify(data.detail);
-if(data && data.message) return data.message;
-if(data && data.error) return data.error;
-return "Server error";
-}
-
-async function apiRequest(url,options={}){
-let response;
-
-try{
-response = await fetch(url,options);
-}catch(error){
-throw new Error("Could not connect to the conversion server. Please try again.");
-}
-
-if(!response.ok){
-const data = await readApiResponse(response);
-throw new Error("HTTP " + response.status + ": " + apiError(data));
-}
-
-return response;
-}
-
-function updateProgress(value,message){
-progressArea.style.display = "block";
-progressFill.style.width = value + "%";
-progressLabel.textContent = message;
+function updateProgress(value, message){
+  progressArea.style.display = "block";
+  progressFill.style.width = value + "%";
+  progressLabel.textContent = message;
 }
 
 async function startConversion(){
-if(!selectedFile){
-showStatus("Please select a file first.","error");
-return;
+  if(!selectedFile){
+    showStatus("Please select a file first.", "error");
+    return;
+  }
+
+  const format = formatSelect.value;
+
+  if(!format){
+    showStatus("Please choose an output format.", "error");
+    return;
+  }
+
+  convertButton.disabled = true;
+  convertButton.textContent = "Processing...";
+  clearStatus();
+  clearDownload();
+  updateProgress(10, "Uploading your file... This may take up to 60 seconds if the converter is asleep.");
+
+  try{
+    const form = new FormData();
+    form.append("file", selectedFile);
+    form.append("output_format", format);
+
+    let response;
+
+    try{
+      response = await fetch(CONVERT_ENDPOINT, {
+        method: "POST",
+        body: form
+      });
+    }catch(networkError){
+      throw new Error("Could not connect to the conversion server. Please check your internet connection and try again.");
+    }
+
+    // Cold-start wakeup: 413 / 5xx is returned as JSON, 200 is the file itself.
+    if(!response.ok){
+      let message = "Conversion failed.";
+
+      const type = response.headers.get("content-type") || "";
+
+      if(type.includes("application/json")){
+        try{
+          const data = await response.json();
+          if(data && typeof data.detail === "string"){
+            message = data.detail;
+          }else if(data && data.detail){
+            message = JSON.stringify(data.detail);
+          }
+        }catch(_){ /* ignore parse errors */ }
+      }else{
+        try{
+          const text = await response.text();
+          if(text) message = text;
+        }catch(_){ /* ignore */ }
+      }
+
+      if(response.status === 413){
+        // Free-tier limit message from the engine already explains the limit.
+        throw new Error(message);
+      }
+
+      if(response.status >= 500){
+        throw new Error("The conversion server had a problem. Please try again in a minute. Details: " + message);
+      }
+
+      throw new Error(message);
+    }
+
+    updateProgress(70, "Downloading the converted file...");
+
+    const blob = await response.blob();
+
+    if(!blob.size){
+      throw new Error("The converted file is empty. Please try again.");
+    }
+
+    downloadObjectUrl = URL.createObjectURL(blob);
+
+    const originalName = selectedFile.name.replace(/\.[^/.]+$/, "");
+    const extension = format === "jpeg" ? "jpg" : format;
+
+    downloadButton.href = downloadObjectUrl;
+    downloadButton.download = originalName + "." + extension;
+    downloadButton.style.display = "block";
+
+    updateProgress(100, "Conversion completed!");
+
+    showStatus(
+      "Your file was converted successfully. Click the green download button to save it.",
+      "success"
+    );
+  }catch(error){
+    console.error("MozTools conversion error:", error);
+    showStatus(error.message, "error");
+    updateProgress(0, "Conversion stopped.");
+  }finally{
+    convertButton.disabled = false;
+    convertButton.textContent = "Convert File";
+  }
 }
 
-const format = formatSelect.value;
-
-if(!format){
-showStatus("Please choose an output format.","error");
-return;
-}
-
-convertButton.disabled = true;
-convertButton.textContent = "Processing...";
-clearStatus();
-clearDownload();
-updateProgress(5,"Uploading your file...");
-
-try{
-
-const form = new FormData();
-form.append("file",selectedFile);
-
-const upload = await apiRequest(API_PREFIX + "/files",{
-method:"POST",
-body:form
-});
-
-const uploadData = await readApiResponse(upload);
-
-if(!uploadData.metadata || !uploadData.metadata.id){
-throw new Error("The upload response did not contain a file ID.");
-}
-
-updateProgress(25,"Preparing conversion...");
-
-const job = await apiRequest(API_PREFIX + "/jobs",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-id:uploadData.metadata.id,
-output_format:format,
-quality:"medium"
-})
-});
-
-const jobData = await readApiResponse(job);
-
-if(!jobData.id){
-throw new Error("The server did not return a conversion job ID.");
-}
-
-let completed = false;
-
-for(let i=0;i<90;i++){
-
-await new Promise(resolve=>setTimeout(resolve,2000));
-
-const statusResponse = await apiRequest(
-API_PREFIX + "/jobs/" + encodeURIComponent(jobData.id)
-);
-
-const data = await readApiResponse(statusResponse);
-
-if(typeof data.progress === "number"){
-updateProgress(
-Math.max(30,Math.min(85,30 + data.progress * 0.55)),
-"Converting your file..."
-);
-}
-
-if(data.status === "failed" || data.status === "cancelled"){
-throw new Error(data.error_message || "The conversion failed.");
-}
-
-if(data.status === "completed"){
-
-if(!data.output_file_id){
-throw new Error("The converted file ID is missing.");
-}
-
-updateProgress(90,"Preparing your download...");
-
-const fileResponse = await apiRequest(
-API_PREFIX + "/files/" + encodeURIComponent(data.output_file_id)
-);
-
-const blob = await fileResponse.blob();
-
-if(!blob.size){
-throw new Error("The converted file is empty.");
-}
-
-downloadObjectUrl = URL.createObjectURL(blob);
-
-const extension = format === "jpeg" ? "jpg" : format;
-
-const originalName = selectedFile.name.replace(/\.[^/.]+$/,"");
-
-downloadButton.href = downloadObjectUrl;
-downloadButton.download = originalName + "." + extension;
-downloadButton.style.display = "block";
-
-updateProgress(100,"Conversion completed!");
-
-showStatus(
-"Your file was converted successfully. Click the green download button to save it.",
-"success"
-);
-
-completed = true;
-break;
-}
-}
-
-if(!completed){
-throw new Error("Conversion did not finish within 3 minutes. Please try again.");
-}
-
-}catch(error){
-console.error("MozTools conversion error:",error);
-showStatus(error.message,"error");
-updateProgress(0,"Conversion stopped.");
-}finally{
-convertButton.disabled = false;
-convertButton.textContent = "Convert File";
-}
-}
-
-convertButton.addEventListener("click",startConversion);
+convertButton.addEventListener("click", startConversion);
 </script>
 
 </body>
