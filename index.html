@@ -106,7 +106,7 @@ button,input,select{font:inherit}
 <div class="file-icon">📄</div>
 <div class="file-text">
 <strong id="fileName"></strong>
-<small id="fileSize"></small>
+<small id="fileMeta"></small>
 </div>
 <button class="remove-file" id="removeFile" type="button">✕</button>
 </div>
@@ -114,7 +114,7 @@ button,input,select{font:inherit}
 <div class="format-area" id="formatArea">
 <label for="formatSelect">Convert to:</label>
 <select id="formatSelect">
-<option value="">Choose output format</option>
+<option value="">Choose format to convert</option>
 </select>
 </div>
 
@@ -206,7 +206,7 @@ const dropZone = document.getElementById("dropZone");
 const fileInput = document.getElementById("fileInput");
 const fileDetails = document.getElementById("fileDetails");
 const fileName = document.getElementById("fileName");
-const fileSize = document.getElementById("fileSize");
+const fileMeta = document.getElementById("fileMeta");
 const formatArea = document.getElementById("formatArea");
 const formatSelect = document.getElementById("formatSelect");
 const convertButton = document.getElementById("convertButton");
@@ -254,7 +254,7 @@ function addFormat(value, label){
 }
 
 function loadFormats(file){
-  formatSelect.innerHTML = '<option value="">Choose output format</option>';
+  formatSelect.innerHTML = '<option value="">Choose format to convert</option>';
 
   const ext = getExtension(file.name);
   const outputs = SUPPORTED[ext];
@@ -290,8 +290,11 @@ function selectFile(file){
   clearStatus();
   clearDownload();
 
+  const ext = getExtension(file.name);
+  const inputLabel = ext ? ext.toUpperCase() : "Unknown";
+
   fileName.textContent = file.name;
-  fileSize.textContent = formatBytes(file.size);
+  fileMeta.textContent = formatBytes(file.size) + " · Input: " + inputLabel;
   fileDetails.style.display = "flex";
 
   progressArea.style.display = "none";
@@ -333,7 +336,7 @@ function resetConverter(){
   fileInput.value = "";
   fileDetails.style.display = "none";
   formatArea.style.display = "none";
-  formatSelect.innerHTML = '<option value="">Choose output format</option>';
+  formatSelect.innerHTML = '<option value="">Choose format to convert</option>';
   convertButton.disabled = true;
   progressArea.style.display = "none";
   progressFill.style.width = "0%";
@@ -382,7 +385,6 @@ async function startConversion(){
       throw new Error("Could not connect to the conversion server. Please check your internet connection and try again.");
     }
 
-    // Cold-start wakeup: 413 / 5xx is returned as JSON, 200 is the file itself.
     if(!response.ok){
       let message = "Conversion failed.";
 
@@ -396,16 +398,15 @@ async function startConversion(){
           }else if(data && data.detail){
             message = JSON.stringify(data.detail);
           }
-        }catch(_){ /* ignore parse errors */ }
+        }catch(_){ }
       }else{
         try{
           const text = await response.text();
           if(text) message = text;
-        }catch(_){ /* ignore */ }
+        }catch(_){ }
       }
 
       if(response.status === 413){
-        // Free-tier limit message from the engine already explains the limit.
         throw new Error(message);
       }
 
