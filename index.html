@@ -23,21 +23,26 @@ button,input,select{font:inherit}
 .converter{background:white;border-radius:18px;padding:28px;box-shadow:0 10px 35px #10294c18;border:1px solid #e5eaf0}
 .converter h2{font-size:21px;margin:0 0 7px}
 .subtitle{font-size:13px;color:#64748b;margin:0 0 22px}
+.conv-area{margin-bottom:18px}
+.conv-area label{font-size:13px;font-weight:700;display:block;margin-bottom:8px}
+.conv-area select{width:100%;padding:14px;border:1px solid #cbd5e1;border-radius:9px;background:white;color:#172033}
+.conv-area select:disabled{background:#f1f5f9;color:#94a3b8;cursor:not-allowed}
 .dropzone{border:2px dashed #b8c9dd;border-radius:14px;background:#f8fbff;padding:42px 15px;text-align:center;cursor:pointer;transition:.2s}
 .dropzone:hover,.dropzone.dragover{border-color:#1674e8;background:#eff6ff}
+.dropzone.disabled{border-color:#dbe3ec;background:#f6f8fb;cursor:not-allowed;opacity:.85}
+.dropzone.disabled:hover{border-color:#dbe3ec;background:#f6f8fb}
 .upload-icon{font-size:43px;margin-bottom:10px}
 .dropzone strong{display:block;color:#1767bb;font-size:16px}
+.dropzone.disabled strong{color:#94a3b8}
 .dropzone p{font-size:13px;color:#64748b;margin:8px 0 0}
 #fileInput{display:none}
-.file-details{display:none;margin-top:18px;padding:15px;background:#f1f6fc;border-radius:11px;align-items:center;gap:12px}
+.file-label{display:none;font-size:12px;color:#64748b;font-weight:700;margin:16px 0 6px;letter-spacing:.3px;text-transform:uppercase}
+.file-details{display:none;padding:15px;background:#f1f6fc;border-radius:11px;align-items:center;gap:12px}
 .file-icon{font-size:30px}
 .file-text{min-width:0;flex:1}
 .file-text strong{display:block;font-size:14px;overflow-wrap:anywhere}
 .file-text small{color:#64748b;font-size:12px}
 .remove-file{border:0;background:#fee2e2;color:#b91c1c;border-radius:8px;padding:8px 11px;cursor:pointer}
-.format-area{display:none;margin-top:22px}
-.format-area label{font-size:13px;font-weight:700;display:block;margin-bottom:8px}
-.format-area select{width:100%;padding:14px;border:1px solid #cbd5e1;border-radius:9px;background:white;color:#172033}
 .button{width:100%;border:0;border-radius:9px;padding:15px;font-weight:700;cursor:pointer;font-size:15px}
 .convert-button{background:#1674e8;color:white;margin-top:20px}
 .convert-button:hover{background:#0d5fc2}
@@ -92,15 +97,26 @@ button,input,select{font:inherit}
 <section class="converter">
 
 <h2>Convert Your Files</h2>
-<p class="subtitle">Select a file from your device to get started.</p>
+<p class="subtitle">Choose a conversion, then upload the matching file.</p>
 
-<div class="dropzone" id="dropZone">
+<div class="conv-area">
+<label for="conversionSelect">What do you want to convert?</label>
+<select id="conversionSelect">
+<option value="">Choose a conversion</option>
+<option value="docx->pdf">Word (DOCX) → PDF</option>
+<option value="pdf->docx">PDF → Word (DOCX) — max 2 pages / 3 MB</option>
+</select>
+</div>
+
+<div class="dropzone disabled" id="dropZone">
 <div class="upload-icon">☁️</div>
-<strong>Choose a file or drag it here</strong>
-<p>Click to browse files from your computer or phone</p>
+<strong id="dropZoneTitle">Please choose a conversion first</strong>
+<p id="dropZoneHint">The upload box becomes active after you pick a conversion above.</p>
 </div>
 
 <input type="file" id="fileInput">
+
+<div class="file-label" id="fileLabel">Current file uploaded</div>
 
 <div class="file-details" id="fileDetails">
 <div class="file-icon">📄</div>
@@ -109,13 +125,6 @@ button,input,select{font:inherit}
 <small id="fileMeta"></small>
 </div>
 <button class="remove-file" id="removeFile" type="button">✕</button>
-</div>
-
-<div class="format-area" id="formatArea">
-<label for="formatSelect">Convert to:</label>
-<select id="formatSelect">
-<option value="">Choose format to convert</option>
-</select>
 </div>
 
 <button class="button convert-button" id="convertButton" type="button" disabled>
@@ -191,24 +200,25 @@ MozTools currently supports <strong>DOCX → PDF</strong> (unlimited) and <stron
 const ENGINE_URL = "https://moztools-own-engine.onrender.com";
 const CONVERT_ENDPOINT = ENGINE_URL + "/convert";
 
-// What the engine actually supports, based on real tests.
-// PDF -> DOCX : pdf2docx, up to 2 pages / 3 MB (free plan limit)
-// DOCX -> PDF : LibreOffice, no page limit
-const SUPPORTED = {
-  "pdf":  [{value:"docx", label:"Word Document (DOCX)"}],
-  "docx": [{value:"pdf",  label:"PDF"}]
+// Only what the engine really does, tested.
+// "from" and "to" must match the exact file extension the engine expects.
+const CONVERSIONS = {
+  "docx->pdf":  { from: "docx", to: "pdf",  uploadTitle: "Now upload your DOCX file",  uploadHint: "DOCX → PDF runs on LibreOffice. No page limit." },
+  "pdf->docx":  { from: "pdf",  to: "docx", uploadTitle: "Now upload your PDF file",   uploadHint: "PDF → DOCX works for text-based PDFs up to 2 pages / 3 MB on the free plan." }
 };
 
 let selectedFile = null;
 let downloadObjectUrl = null;
 
+const conversionSelect = document.getElementById("conversionSelect");
 const dropZone = document.getElementById("dropZone");
+const dropZoneTitle = document.getElementById("dropZoneTitle");
+const dropZoneHint = document.getElementById("dropZoneHint");
 const fileInput = document.getElementById("fileInput");
+const fileLabel = document.getElementById("fileLabel");
 const fileDetails = document.getElementById("fileDetails");
 const fileName = document.getElementById("fileName");
 const fileMeta = document.getElementById("fileMeta");
-const formatArea = document.getElementById("formatArea");
-const formatSelect = document.getElementById("formatSelect");
 const convertButton = document.getElementById("convertButton");
 const progressArea = document.getElementById("progressArea");
 const progressFill = document.getElementById("progressFill");
@@ -246,64 +256,65 @@ function getExtension(name){
   return parts.length > 1 ? parts.pop() : "";
 }
 
-function addFormat(value, label){
-  const option = document.createElement("option");
-  option.value = value;
-  option.textContent = label;
-  formatSelect.appendChild(option);
+function currentConversion(){
+  const key = conversionSelect.value;
+  return key ? CONVERSIONS[key] : null;
 }
 
-function loadFormats(file){
-  formatSelect.innerHTML = '<option value="">Choose format to convert</option>';
-
-  const ext = getExtension(file.name);
-  const outputs = SUPPORTED[ext];
-
-  if(!outputs){
-    showStatus(
-      "This file type is not yet supported. MozTools currently converts PDF → DOCX and DOCX → PDF only. More formats are coming soon.",
-      "error"
-    );
-    formatArea.style.display = "none";
-    convertButton.disabled = true;
-    return;
+function setDropZoneEnabled(enabled){
+  if(enabled){
+    dropZone.classList.remove("disabled");
+    const conv = currentConversion();
+    dropZoneTitle.textContent = conv ? conv.uploadTitle : "Choose a file or drag it here";
+    dropZoneHint.textContent = conv ? conv.uploadHint : "Click to browse files from your computer or phone";
+  }else{
+    dropZone.classList.add("disabled");
+    dropZoneTitle.textContent = "Please choose a conversion first";
+    dropZoneHint.textContent = "The upload box becomes active after you pick a conversion above.";
   }
-
-  outputs.forEach(item => addFormat(item.value, item.label));
-
-  if(ext === "pdf"){
-    const hint = document.createElement("option");
-    hint.disabled = true;
-    hint.value = "";
-    hint.textContent = "Free plan: PDF → DOCX up to 2 pages / 3 MB";
-    formatSelect.appendChild(hint);
-  }
-
-  formatArea.style.display = "block";
-  convertButton.disabled = false;
 }
 
-function selectFile(file){
-  if(!file) return;
+function updateConvertButtonState(){
+  const conv = currentConversion();
+  convertButton.disabled = !(conv && selectedFile);
+}
 
-  selectedFile = file;
+conversionSelect.addEventListener("change", () => {
   clearStatus();
   clearDownload();
 
-  const ext = getExtension(file.name);
-  const inputLabel = ext ? ext.toUpperCase() : "Unknown";
+  const conv = currentConversion();
 
-  fileName.textContent = file.name;
-  fileMeta.textContent = formatBytes(file.size) + " · Input: " + inputLabel;
-  fileDetails.style.display = "flex";
+  if(!conv){
+    resetFileOnly();
+    setDropZoneEnabled(false);
+    updateConvertButtonState();
+    return;
+  }
 
-  progressArea.style.display = "none";
-  progressFill.style.width = "0%";
+  setDropZoneEnabled(true);
 
-  loadFormats(file);
-}
+  // If a file is already loaded, check it matches the new conversion.
+  if(selectedFile){
+    const ext = getExtension(selectedFile.name);
+    if(ext !== conv.from){
+      showStatus(
+        "You chose a conversion that starts from " + conv.from.toUpperCase() +
+        ", but the uploaded file is " + (ext ? ext.toUpperCase() : "unknown") +
+        ". Please upload a matching file, or change the conversion.",
+        "error"
+      );
+      resetFileOnly();
+    }
+  }
 
-dropZone.addEventListener("click", () => fileInput.click());
+  updateConvertButtonState();
+});
+
+dropZone.addEventListener("click", () => {
+  if(dropZone.classList.contains("disabled")) return;
+  fileInput.click();
+});
 
 fileInput.addEventListener("change", () => {
   if(fileInput.files.length){
@@ -312,6 +323,7 @@ fileInput.addEventListener("change", () => {
 });
 
 dropZone.addEventListener("dragover", event => {
+  if(dropZone.classList.contains("disabled")) return;
   event.preventDefault();
   dropZone.classList.add("dragover");
 });
@@ -321,6 +333,7 @@ dropZone.addEventListener("dragleave", () => {
 });
 
 dropZone.addEventListener("drop", event => {
+  if(dropZone.classList.contains("disabled")) return;
   event.preventDefault();
   dropZone.classList.remove("dragover");
   if(event.dataTransfer.files.length){
@@ -328,20 +341,62 @@ dropZone.addEventListener("drop", event => {
   }
 });
 
-document.getElementById("removeFile").addEventListener("click", resetConverter);
-document.getElementById("resetButton").addEventListener("click", resetConverter);
+document.getElementById("removeFile").addEventListener("click", resetFileOnly);
+document.getElementById("resetButton").addEventListener("click", resetAll);
 
-function resetConverter(){
+function resetFileOnly(){
   selectedFile = null;
   fileInput.value = "";
   fileDetails.style.display = "none";
-  formatArea.style.display = "none";
-  formatSelect.innerHTML = '<option value="">Choose format to convert</option>';
-  convertButton.disabled = true;
+  fileLabel.style.display = "none";
   progressArea.style.display = "none";
   progressFill.style.width = "0%";
   clearStatus();
   clearDownload();
+  updateConvertButtonState();
+}
+
+function resetAll(){
+  resetFileOnly();
+  conversionSelect.value = "";
+  setDropZoneEnabled(false);
+}
+
+function selectFile(file){
+  if(!file) return;
+
+  const conv = currentConversion();
+
+  if(!conv){
+    showStatus("Please choose a conversion first.", "error");
+    return;
+  }
+
+  const ext = getExtension(file.name);
+
+  if(ext !== conv.from){
+    showStatus(
+      "This conversion needs a " + conv.from.toUpperCase() +
+      " file, but you selected a " + (ext ? ext.toUpperCase() : "unknown") +
+      " file. Please choose a matching file, or change the conversion.",
+      "error"
+    );
+    return;
+  }
+
+  selectedFile = file;
+  clearStatus();
+  clearDownload();
+
+  fileName.textContent = file.name;
+  fileMeta.textContent = formatBytes(file.size) + " · Input: " + ext.toUpperCase();
+  fileDetails.style.display = "flex";
+  fileLabel.style.display = "block";
+
+  progressArea.style.display = "none";
+  progressFill.style.width = "0%";
+
+  updateConvertButtonState();
 }
 
 function updateProgress(value, message){
@@ -351,15 +406,15 @@ function updateProgress(value, message){
 }
 
 async function startConversion(){
-  if(!selectedFile){
-    showStatus("Please select a file first.", "error");
+  const conv = currentConversion();
+
+  if(!conv){
+    showStatus("Please choose a conversion first.", "error");
     return;
   }
 
-  const format = formatSelect.value;
-
-  if(!format){
-    showStatus("Please choose an output format.", "error");
+  if(!selectedFile){
+    showStatus("Please choose a file first.", "error");
     return;
   }
 
@@ -372,7 +427,7 @@ async function startConversion(){
   try{
     const form = new FormData();
     form.append("file", selectedFile);
-    form.append("output_format", format);
+    form.append("output_format", conv.to);
 
     let response;
 
@@ -428,7 +483,7 @@ async function startConversion(){
     downloadObjectUrl = URL.createObjectURL(blob);
 
     const originalName = selectedFile.name.replace(/\.[^/.]+$/, "");
-    const extension = format === "jpeg" ? "jpg" : format;
+    const extension = conv.to === "jpeg" ? "jpg" : conv.to;
 
     downloadButton.href = downloadObjectUrl;
     downloadButton.download = originalName + "." + extension;
@@ -447,10 +502,15 @@ async function startConversion(){
   }finally{
     convertButton.disabled = false;
     convertButton.textContent = "Convert File";
+    updateConvertButtonState();
   }
 }
 
 convertButton.addEventListener("click", startConversion);
+
+// Initial state: drop zone disabled, no file, no download.
+setDropZoneEnabled(false);
+updateConvertButtonState();
 </script>
 
 </body>
