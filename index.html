@@ -58,6 +58,40 @@ button,input,select{font:inherit}
 .download-button{display:none;margin-top:17px;background:#10b981;color:white;text-decoration:none;text-align:center;padding:15px;border-radius:9px;font-weight:700}
 .download-button:hover{background:#059669}
 .note{font-size:12px;color:#64748b;line-height:1.6;margin-top:18px}
+
+/* --- new section: supported hint --- */
+.supported-hint{max-width:850px;margin:0 auto 8px;padding:0 18px;text-align:center;font-size:13px;color:#475569;line-height:1.6}
+.supported-hint strong{color:#1674e8}
+
+/* --- new section: convert cards --- */
+.convert-cards{max-width:1000px;margin:45px auto 0;padding:0 18px}
+.convert-cards h2{text-align:center;font-size:23px}
+.convert-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px;margin-top:22px}
+.convert-card{background:white;border:1px solid #e5eaf0;border-radius:12px;padding:20px}
+.convert-card.muted{background:#f8fafc;border-style:dashed;color:#64748b}
+.convert-card .card-icon{font-size:27px}
+.convert-card h3{font-size:15px;margin:10px 0 6px}
+.convert-card p{font-size:13px;color:#64748b;line-height:1.6;margin:0}
+
+/* --- new section: how it works --- */
+.how-steps{max-width:1000px;margin:45px auto 0;padding:0 18px}
+.how-steps h2{text-align:center;font-size:23px}
+.step-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px;margin-top:22px}
+.step-card{background:white;border:1px solid #e5eaf0;border-radius:12px;padding:20px;text-align:center}
+.step-number{display:inline-block;width:34px;height:34px;line-height:34px;border-radius:50%;background:#1674e8;color:white;font-weight:800;font-size:15px;margin-bottom:8px}
+.step-card h3{font-size:15px;margin:4px 0 6px}
+.step-card p{font-size:13px;color:#64748b;line-height:1.6;margin:0}
+
+/* --- new section: FAQ --- */
+.faq{max-width:850px;margin:45px auto 0;padding:0 18px}
+.faq h2{text-align:center;font-size:23px;margin-bottom:22px}
+.faq-item{background:white;border:1px solid #e5eaf0;border-radius:12px;padding:0;margin-bottom:10px;overflow:hidden}
+.faq-item summary{cursor:pointer;padding:16px 18px;font-size:14px;font-weight:700;color:#172033;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:"+";color:#1674e8;font-weight:800;font-size:18px}
+.faq-item[open] summary::after{content:"−"}
+.faq-item p{margin:0;padding:0 18px 16px;font-size:13px;color:#475569;line-height:1.7}
+
 .features{max-width:1000px;margin:45px auto;padding:0 18px}
 .features h2{text-align:center;font-size:23px}
 .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px;margin-top:22px}
@@ -155,6 +189,88 @@ MozTools currently supports <strong>DOCX → PDF</strong> (unlimited) and <stron
 </section>
 </main>
 
+<p class="supported-hint"><strong>Supported now:</strong> DOCX → PDF (unlimited) · PDF → DOCX (up to 2 pages / 3 MB)</p>
+
+<section class="convert-cards">
+<h2>What can MozTools convert?</h2>
+<div class="convert-grid">
+
+<div class="convert-card">
+<div class="card-icon">📄</div>
+<h3>DOCX → PDF</h3>
+<p>Unlimited pages. Free. Runs on LibreOffice.</p>
+</div>
+
+<div class="convert-card">
+<div class="card-icon">📝</div>
+<h3>PDF → DOCX</h3>
+<p>Up to 2 pages / 3 MB on the free plan. Text-based PDFs.</p>
+</div>
+
+<div class="convert-card muted">
+<div class="card-icon">⏳</div>
+<h3>More formats coming soon</h3>
+<p>Images, Audio and Video engines are being built.</p>
+</div>
+
+</div>
+</section>
+
+<section class="how-steps">
+<h2>How it works</h2>
+<div class="step-grid">
+
+<div class="step-card">
+<div class="step-number">1</div>
+<h3>Choose a conversion</h3>
+<p>Pick the direction you need from the dropdown above.</p>
+</div>
+
+<div class="step-card">
+<div class="step-number">2</div>
+<h3>Upload your file</h3>
+<p>Drag and drop, or click to browse.</p>
+</div>
+
+<div class="step-card">
+<div class="step-number">3</div>
+<h3>Download the result</h3>
+<p>Your converted file downloads automatically.</p>
+</div>
+
+</div>
+</section>
+
+<section class="faq">
+<h2>Frequently asked questions</h2>
+
+<details class="faq-item">
+<summary>Is MozTools free?</summary>
+<p>Yes. The free plan has honest limits: PDF → DOCX supports up to 2 pages / 3 MB, and the first request after inactivity may take up to 60 seconds while the server wakes up.</p>
+</details>
+
+<details class="faq-item">
+<summary>Why is PDF → DOCX limited to 2 pages?</summary>
+<p>The conversion runs on free hosting with limited memory. Larger PDFs are refused with a clear message instead of crashing the server, so every visitor sees predictable behaviour.</p>
+</details>
+
+<details class="faq-item">
+<summary>What is a text-based PDF?</summary>
+<p>One where you can click and drag to highlight the text. Scanned PDFs (photos of printed pages) may not convert well and would need OCR, which is not part of the free engine.</p>
+</details>
+
+<details class="faq-item">
+<summary>Will my file be stored?</summary>
+<p>No. Files are deleted from the server immediately after the converted file is returned to you.</p>
+</details>
+
+<details class="faq-item">
+<summary>Why does the first conversion take longer?</summary>
+<p>The free server sleeps after inactivity and takes up to 60 seconds to wake up. Later conversions on the same visit are fast.</p>
+</details>
+
+</section>
+
 <section class="features" id="about">
 <h2>Why Use MozTools?</h2>
 <div class="feature-grid">
@@ -201,7 +317,6 @@ const ENGINE_URL = "https://moztools-own-engine.onrender.com";
 const CONVERT_ENDPOINT = ENGINE_URL + "/convert";
 
 // Only what the engine really does, tested.
-// "from" and "to" must match the exact file extension the engine expects.
 const CONVERSIONS = {
   "docx->pdf":  { from: "docx", to: "pdf",  uploadTitle: "Now upload your DOCX file",  uploadHint: "DOCX → PDF runs on LibreOffice. No page limit." },
   "pdf->docx":  { from: "pdf",  to: "docx", uploadTitle: "Now upload your PDF file",   uploadHint: "PDF → DOCX works for text-based PDFs up to 2 pages / 3 MB on the free plan." }
@@ -294,7 +409,6 @@ conversionSelect.addEventListener("change", () => {
 
   setDropZoneEnabled(true);
 
-  // If a file is already loaded, check it matches the new conversion.
   if(selectedFile){
     const ext = getExtension(selectedFile.name);
     if(ext !== conv.from){
@@ -508,7 +622,6 @@ async function startConversion(){
 
 convertButton.addEventListener("click", startConversion);
 
-// Initial state: drop zone disabled, no file, no download.
 setDropZoneEnabled(false);
 updateConvertButtonState();
 </script>
